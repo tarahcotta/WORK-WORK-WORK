@@ -3,6 +3,7 @@ package com.example.data
 import android.content.Context
 import android.util.Log
 import androidx.credentials.CredentialManager
+import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
 import androidx.credentials.exceptions.GetCredentialException
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
@@ -269,8 +270,29 @@ class FirebaseAuthManager(private val context: Context) {
             val credentialResult = credentialManager.getCredential(targetContext, request)
             val credential = credentialResult.credential
 
-            if (credential is GoogleIdTokenCredential) {
-                val firebaseCredential = GoogleAuthProvider.getCredential(credential.idToken, null)
+            val idToken: String? = when (credential) {
+                is GoogleIdTokenCredential -> credential.idToken
+                is CustomCredential -> {
+                    if (credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
+                        try {
+                            GoogleIdTokenCredential.createFrom(credential.data).idToken
+                        } catch (e: Exception) {
+                            Log.e("FirebaseAuthManager", "Error parsing GoogleIdTokenCredential from CustomCredential", e)
+                            credential.data.getString("com.google.android.libraries.identity.googleid.BUNDLE_KEY_ID_TOKEN")
+                                ?: credential.data.getString("id_token")
+                                ?: credential.data.getString("idToken")
+                        }
+                    } else {
+                        credential.data.getString("com.google.android.libraries.identity.googleid.BUNDLE_KEY_ID_TOKEN")
+                            ?: credential.data.getString("id_token")
+                            ?: credential.data.getString("idToken")
+                    }
+                }
+                else -> null
+            }
+
+            if (!idToken.isNullOrBlank()) {
+                val firebaseCredential = GoogleAuthProvider.getCredential(idToken, null)
                 val authResult = currentAuth.signInWithCredential(firebaseCredential).await()
                 _currentUser.value = authResult.user
                 authResult.user
