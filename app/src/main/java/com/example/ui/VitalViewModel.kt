@@ -1,0 +1,467 @@
+package com.example.ui
+
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
+import android.content.Context
+import com.example.ui.theme.ThemeMode
+import com.example.data.FirebaseAuthManager
+import com.example.data.LoggedSetEntity
+import com.example.data.LoggedWorkoutSessionEntity
+import com.example.data.SyncStatus
+import com.example.data.UserProfileEntity
+import com.example.data.BookmarkedExerciseEntity
+import com.example.data.ProgressPhotoEntity
+import com.example.data.LocalPhotoStorageManager
+import com.example.data.VitalDatabase
+import com.example.data.VitalRepository
+import com.example.data.WorkoutExerciseEntity
+import com.example.data.WorkoutRoutineEntity
+import com.example.ui.components.ProgressiveOverloadInfo
+import com.google.firebase.auth.FirebaseUser
+import android.net.Uri
+import android.graphics.Bitmap
+import android.util.Log
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+
+class VitalViewModel(application: Application) : AndroidViewModel(application) {
+
+    private val repository: VitalRepository
+
+    val authManager: FirebaseAuthManager = FirebaseAuthManager(application)
+    val isFirebaseConfigured: StateFlow<Boolean> = authManager.isConfigured
+    val currentUser: StateFlow<FirebaseUser?> = authManager.currentUser
+    val authLoading: StateFlow<Boolean> = authManager.isLoading
+    val authError: StateFlow<String?> = authManager.authError
+
+    val syncStatus: StateFlow<SyncStatus>
+
+    private val sharedPrefs = application.getSharedPreferences("vital_strength_prefs", Context.MODE_PRIVATE)
+
+    private val _themeMode = MutableStateFlow(
+        when (sharedPrefs.getString("theme_mode", "LIGHT")) {
+            "LIGHT" -> ThemeMode.LIGHT
+            "DARK" -> ThemeMode.DARK
+            else -> ThemeMode.LIGHT
+        }
+    )
+    val themeMode: StateFlow<ThemeMode> = _themeMode.asStateFlow()
+
+    private val _weightUnit = MutableStateFlow(sharedPrefs.getString("weight_unit", "lbs") ?: "lbs")
+    val weightUnit: StateFlow<String> = _weightUnit.asStateFlow()
+
+    private val _hasCompletedOnboarding = MutableStateFlow(sharedPrefs.getBoolean("has_completed_onboarding", false))
+    val hasCompletedOnboarding: StateFlow<Boolean> = _hasCompletedOnboarding.asStateFlow()
+
+    private val _isDataLoading = MutableStateFlow(false)
+    val isDataLoading: StateFlow<Boolean> = _isDataLoading.asStateFlow()
+
+    val userProfile: StateFlow<UserProfileEntity?>
+    val activeRoutines: StateFlow<List<WorkoutRoutineEntity>>
+    val allSessions: StateFlow<List<LoggedWorkoutSessionEntity>>
+    val allLoggedSets: StateFlow<List<LoggedSetEntity>>
+    val personalBests: StateFlow<Map<String, Float>>
+    val progressiveOverloadList: StateFlow<List<ProgressiveOverloadInfo>>
+    val allProgressPhotos: StateFlow<List<ProgressPhotoEntity>>
+
+    private val _selectedRoutine = MutableStateFlow<WorkoutRoutineEntity?>(null)
+    val selectedRoutine: StateFlow<WorkoutRoutineEntity?> = _selectedRoutine.asStateFlow()
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val selectedRoutineExercises: StateFlow<List<WorkoutExerciseEntity>>
+
+
+    lateinit var bookmarkedExercises: StateFlow<List<BookmarkedExerciseEntity>>
+
+    fun addBookmark(exerciseId: String) {
+        viewModelScope.launch {
+            repository.addBookmark(exerciseId)
+        }
+    }
+
+    fun removeBookmark(exerciseId: String) {
+        viewModelScope.launch {
+            repository.removeBookmark(exerciseId)
+        }
+    }
+
+    fun updateExerciseNotes(exerciseId: Long, notes: String) {
+        viewModelScope.launch {
+            repository.updateExerciseNotes(exerciseId, notes)
+        }
+    }
+
+    init {
+        val dao = VitalDatabase.getDatabase(application).vitalDao()
+        val syncManager = com.example.data.FirestoreSyncManager(application)
+        repository = VitalRepository(dao, syncManager)
+        syncStatus = repository.firestoreSyncManager.syncStatus
+
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                _isDataLoading.value = true
+                repository.ensureInitialDataLoaded()
+            } catch (e: Throwable) {
+                Log.e("VitalViewModel", "Failed to ensure initial data", e)
+            } finally {
+                _isDataLoading.value = false
+            }
+        }
+
+
+        bookmarkedExercises = repository.bookmarkedExercises.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
+        userProfile = repository.userProfile.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = null
+        )
+
+        activeRoutines = repository.activeRoutines.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
+
+        allSessions = repository.allSessions.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
+
+        allLoggedSets = repository.allLoggedSets.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
+
+        allProgressPhotos = repository.allProgressPhotos.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
+
+        personalBests = repository.allLoggedSets.map { sets ->
+            sets.groupBy { it.exerciseName }
+                .mapValues { entry -> entry.value.maxOfOrNull { it.weightLbs } ?: 0f }
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyMap()
+        )
+
+        progressiveOverloadList = repository.allLoggedSets.map { sets: List<LoggedSetEntity> ->
+            val resultList = mutableListOf<ProgressiveOverloadInfo>()
+            val groupedByExercise: Map<String, List<LoggedSetEntity>> = sets.groupBy { it.exerciseName }
+            for ((exerciseName, setList) in groupedByExercise) {
+                var maxWeight = 0f
+                var totalRpe = 0
+                val recentSets = setList.take(5)
+                for (set in setList) {
+                    if (set.weightLbs > maxWeight) {
+                        maxWeight = set.weightLbs
+                    }
+                }
+                for (set in recentSets) {
+                    totalRpe += set.rpeActual
+                }
+                val avgRpe = if (recentSets.isNotEmpty()) totalRpe / recentSets.size else 8
+                val jointFeel = recentSets.firstOrNull()?.jointFeel ?: "Comfortable"
+                val lowerName = exerciseName.lowercase()
+                val isCompound = lowerName.contains("squat") || lowerName.contains("deadlift") ||
+                        lowerName.contains("bench") || lowerName.contains("press") ||
+                        lowerName.contains("row") || lowerName.contains("hip thrust") ||
+                        lowerName.contains("lunge") || lowerName.contains("clean") ||
+                        lowerName.contains("carry") || lowerName.contains("pull")
+
+                val isReady = isCompound && avgRpe <= 8 && jointFeel != "Joint Strain"
+                val reasoning = if (isReady) "RPE $avgRpe & $jointFeel joint feedback: primed for +5 lbs increment"
+                else if (avgRpe >= 9) "High RPE ($avgRpe) - maintain weight to solidify motor patterns"
+                else "Joint response: $jointFeel - preserve current load"
+
+                resultList.add(
+                    ProgressiveOverloadInfo(
+                        exerciseName = exerciseName,
+                        isCompoundLift = isCompound,
+                        currentPrLbs = maxWeight,
+                        recommendedNextWeightLbs = if (isReady) maxWeight + 5f else maxWeight,
+                        lastRpe = avgRpe,
+                        lastJointFeel = jointFeel,
+                        isReadyToIncrement = isReady,
+                        reasoning = reasoning
+                    )
+                )
+            }
+            resultList.sortedByDescending { it.isReadyToIncrement }
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
+
+        @OptIn(ExperimentalCoroutinesApi::class)
+        selectedRoutineExercises = _selectedRoutine.flatMapLatest { routine ->
+            if (routine != null) {
+                repository.getExercisesForRoutine(routine.id)
+            } else {
+                flowOf(emptyList())
+            }
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
+
+        viewModelScope.launch {
+            repository.activeRoutines.collect { routines ->
+                if (_selectedRoutine.value == null && routines.isNotEmpty()) {
+                    _selectedRoutine.value = routines.first()
+                }
+            }
+        }
+    }
+
+    fun signInWithEmail(email: String, pass: String) {
+        viewModelScope.launch {
+            val user = authManager.signInWithEmail(email, pass)
+            if (user != null) {
+                repository.restoreUserDataFromCloud(user.uid)
+            }
+        }
+    }
+
+    fun signUpWithEmail(email: String, pass: String) {
+        viewModelScope.launch {
+            val user = authManager.signUpWithEmail(email, pass)
+            if (user != null) {
+                repository.backupAllLocalDataToCloud(user.uid)
+            }
+        }
+    }
+
+    fun signInAnonymously() {
+        viewModelScope.launch {
+            authManager.signInAnonymously()
+        }
+    }
+
+    fun signInWithGoogle(webClientId: String) {
+        viewModelScope.launch {
+            val user = authManager.signInWithGoogle(webClientId)
+            if (user != null) {
+                repository.restoreUserDataFromCloud(user.uid)
+            }
+        }
+    }
+
+    fun signOut() {
+        authManager.signOut()
+    }
+
+    fun triggerCloudSync() {
+        val user = currentUser.value ?: return
+        viewModelScope.launch {
+            repository.backupAllLocalDataToCloud(user.uid)
+        }
+    }
+
+    fun clearAuthError() {
+        authManager.clearError()
+    }
+
+    fun refreshFirebaseAuth(): Boolean {
+        return authManager.refresh()
+    }
+
+    fun selectRoutine(routine: WorkoutRoutineEntity) {
+        _selectedRoutine.value = routine
+    }
+
+    fun saveUserProfile(profile: UserProfileEntity) {
+        viewModelScope.launch {
+            val uid = currentUser.value?.uid
+            repository.saveUserProfile(profile, uid)
+        }
+    }
+
+    fun regenerateRoutines() {
+        viewModelScope.launch {
+            val profile = userProfile.value ?: UserProfileEntity()
+            repository.generateAndSaveRoutines(profile)
+        }
+    }
+
+    fun logWorkoutSession(
+        routineDayTitle: String,
+        sets: List<LoggedSetEntity>,
+        overallFeel: String,
+        notes: String
+    ) {
+        viewModelScope.launch {
+            val totalVolume = sets.sumOf { (it.weightLbs * it.repsCompleted).toDouble() }.toFloat()
+            val session = LoggedWorkoutSessionEntity(
+                routineDayTitle = routineDayTitle,
+                dateTimestamp = System.currentTimeMillis(),
+                totalVolumeLbs = totalVolume,
+                totalSetsCompleted = sets.size,
+                overallFeel = overallFeel,
+                notes = notes
+            )
+            val uid = currentUser.value?.uid
+            repository.logWorkoutSession(session, sets, uid)
+        }
+    }
+
+    fun deleteSession(sessionId: Long) {
+        viewModelScope.launch {
+            repository.deleteSession(sessionId)
+        }
+    }
+
+    fun getSetsForSession(sessionId: Long) = repository.getSetsForSession(sessionId)
+    fun getMaxWeightForExercise(exerciseName: String) = repository.getMaxWeightForExercise(exerciseName)
+
+    fun addProgressPhotoFromUri(uri: Uri, poseTag: String, bodyWeightLbs: Float?, notes: String) {
+        viewModelScope.launch {
+            val localPath = LocalPhotoStorageManager.saveImageFromUri(getApplication(), uri)
+            val photo = ProgressPhotoEntity(
+                filePath = localPath,
+                dateTimestamp = System.currentTimeMillis(),
+                poseTag = poseTag,
+                bodyWeightLbs = bodyWeightLbs,
+                notes = notes,
+                isSample = false
+            )
+            repository.addProgressPhoto(photo)
+        }
+    }
+
+    fun addProgressPhotoFromBitmap(bitmap: Bitmap, poseTag: String, bodyWeightLbs: Float?, notes: String) {
+        viewModelScope.launch {
+            val localPath = LocalPhotoStorageManager.saveBitmapLocally(getApplication(), bitmap)
+            val photo = ProgressPhotoEntity(
+                filePath = localPath,
+                dateTimestamp = System.currentTimeMillis(),
+                poseTag = poseTag,
+                bodyWeightLbs = bodyWeightLbs,
+                notes = notes,
+                isSample = false
+            )
+            repository.addProgressPhoto(photo)
+        }
+    }
+
+    fun deleteProgressPhoto(photo: ProgressPhotoEntity) {
+        viewModelScope.launch {
+            repository.deleteProgressPhoto(photo.id, photo.filePath)
+        }
+    }
+
+    fun seedSampleProgressPhotosIfEmpty() {
+        viewModelScope.launch {
+            if (allProgressPhotos.value.isEmpty()) {
+                val now = System.currentTimeMillis()
+                val dayMs = 86400000L
+                val app = getApplication<Application>()
+
+                // Sample 1: Baseline 6 weeks ago
+                val bmp1 = LocalPhotoStorageManager.createSamplePostureBitmap(
+                    title = "Baseline Posture Scan",
+                    subtitle = "Week 1 Baseline",
+                    isImproved = false,
+                    angle = "Side View"
+                )
+                val path1 = LocalPhotoStorageManager.saveBitmapLocally(app, bmp1)
+                repository.addProgressPhoto(
+                    ProgressPhotoEntity(
+                        filePath = path1,
+                        dateTimestamp = now - (42 * dayMs),
+                        poseTag = "Side Alignment",
+                        bodyWeightLbs = 172.5f,
+                        notes = "Initial baseline posture scan. Noticed slight forward head posture and anterior pelvic tilt.",
+                        isSample = true
+                    )
+                )
+
+                // Sample 2: Intermediate Front 3 weeks ago
+                val bmp2 = LocalPhotoStorageManager.createSamplePostureBitmap(
+                    title = "Midpoint Symmetry Check",
+                    subtitle = "Week 3 Progression",
+                    isImproved = false,
+                    angle = "Front View"
+                )
+                val path2 = LocalPhotoStorageManager.saveBitmapLocally(app, bmp2)
+                repository.addProgressPhoto(
+                    ProgressPhotoEntity(
+                        filePath = path2,
+                        dateTimestamp = now - (21 * dayMs),
+                        poseTag = "Front Posture",
+                        bodyWeightLbs = 171.0f,
+                        notes = "Improving shoulder leveling after consistent face pulls and goblet squats.",
+                        isSample = true
+                    )
+                )
+
+                // Sample 3: Recent Side View 2 days ago
+                val bmp3 = LocalPhotoStorageManager.createSamplePostureBitmap(
+                    title = "Spinal Alignment Milestone",
+                    subtitle = "Week 6 Milestone",
+                    isImproved = true,
+                    angle = "Side View"
+                )
+                val path3 = LocalPhotoStorageManager.saveBitmapLocally(app, bmp3)
+                repository.addProgressPhoto(
+                    ProgressPhotoEntity(
+                        filePath = path3,
+                        dateTimestamp = now - (2 * dayMs),
+                        poseTag = "Side Alignment",
+                        bodyWeightLbs = 170.2f,
+                        notes = "Significant cervical and thoracic extension improvements. Hip hinge mechanics feeling solid.",
+                        isSample = true
+                    )
+                )
+            }
+        }
+    }
+
+    fun setThemeMode(mode: ThemeMode) {
+        _themeMode.value = mode
+        sharedPrefs.edit().putString("theme_mode", mode.name).apply()
+    }
+
+    fun setWeightUnit(unit: String) {
+        _weightUnit.value = unit
+        sharedPrefs.edit().putString("weight_unit", unit).apply()
+    }
+
+    fun toggleThemeMode() {
+        val nextMode = when (_themeMode.value) {
+            ThemeMode.LIGHT -> ThemeMode.DARK
+            ThemeMode.DARK -> ThemeMode.SYSTEM
+            ThemeMode.SYSTEM -> ThemeMode.LIGHT
+        }
+        setThemeMode(nextMode)
+    }
+
+    fun completeOnboarding() {
+        _hasCompletedOnboarding.value = true
+        sharedPrefs.edit().putBoolean("has_completed_onboarding", true).apply()
+    }
+
+    fun replayOnboarding() {
+        _hasCompletedOnboarding.value = false
+    }
+}

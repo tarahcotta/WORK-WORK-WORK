@@ -1,0 +1,8 @@
+{
+  "name": "Women's Strength",
+  "description": "Women\u0027s Strength \u0026 Longevity - Age Powerfully \u0026 Recover strength programming designed for bone mineral density, joint health, and progressive overload.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
