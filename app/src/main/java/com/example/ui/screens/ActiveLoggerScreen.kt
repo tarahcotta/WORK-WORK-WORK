@@ -27,6 +27,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -149,6 +150,8 @@ import com.example.ui.components.WarmupSetStep
 import com.example.ui.components.WorkoutExitConfirmationDialog
 import com.example.ui.theme.TelemetryNumeralStyle
 import com.example.ui.theme.TelemetryTimerStyle
+import com.example.ui.theme.VitalShapes
+import com.example.ui.theme.VitalSpacing
 
 data class ExerciseLogState(
     val exerciseName: String,
@@ -167,7 +170,7 @@ data class SetLogInput(
     var isCompleted: Boolean = false
 )
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun ActiveLoggerScreen(
     routine: WorkoutRoutineEntity?,
@@ -791,18 +794,16 @@ fun ActiveLoggerScreen(
                 OutlinedCard(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 16.dp)
+                        .padding(bottom = VitalSpacing.lg)
                         .testTag("exercise_log_card_$exIndex"),
-                    shape = RoundedCornerShape(12.dp),
+                    shape = VitalShapes.Medium,
                     colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.surface),
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f))
                 ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
+                    Column(modifier = Modifier.padding(VitalSpacing.lg)) {
                         // Exercise Card Header (Clean, Monolithic Athletic Voice)
                         Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(bottom = 8.dp)
+                            modifier = Modifier.fillMaxWidth()
                         ) {
                             // Primary Row: Number + Title on Left, Secondary Quick Tools on Right
                             Row(
@@ -811,14 +812,12 @@ fun ActiveLoggerScreen(
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Row(
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .padding(end = 6.dp),
+                                    modifier = Modifier.weight(1f),
                                     verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                    horizontalArrangement = Arrangement.spacedBy(VitalSpacing.sm)
                                 ) {
                                     Surface(
-                                        shape = RoundedCornerShape(6.dp),
+                                        shape = VitalShapes.Micro,
                                         color = MaterialTheme.colorScheme.primary
                                     ) {
                                         Text(
@@ -826,7 +825,7 @@ fun ActiveLoggerScreen(
                                             style = MaterialTheme.typography.labelSmall,
                                             fontWeight = FontWeight.ExtraBold,
                                             color = MaterialTheme.colorScheme.onPrimary,
-                                            modifier = Modifier.padding(horizontal = 7.dp, vertical = 2.dp)
+                                            modifier = Modifier.padding(horizontal = 7.dp, vertical = VitalSpacing.xxs)
                                         )
                                     }
                                     Text(
@@ -836,15 +835,21 @@ fun ActiveLoggerScreen(
                                         color = MaterialTheme.colorScheme.onSurface,
                                         maxLines = 2,
                                         overflow = TextOverflow.Ellipsis,
-                                        lineHeight = 20.sp
+                                        lineHeight = 20.sp,
+                                        modifier = Modifier.weight(1f)
                                     )
                                 }
 
+                                Spacer(modifier = Modifier.width(VitalSpacing.sm))
+
                                 // Secondary Tools grouped cleanly
-                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(VitalSpacing.xxs)
+                                ) {
                                     IconButton(
                                         onClick = { activeFormDemoExercise = logState.exerciseName },
-                                        modifier = Modifier.size(40.dp)
+                                        modifier = Modifier.size(36.dp)
                                     ) {
                                         Icon(
                                             imageVector = Icons.Default.SmartDisplay,
@@ -859,7 +864,7 @@ fun ActiveLoggerScreen(
                                             val currentWeight = firstSet?.weightText?.toFloatOrNull() ?: currentPr
                                             smartWarmupDialogTarget = Pair(logState.exerciseName, if (currentWeight > 0f) currentWeight else 95f)
                                         },
-                                        modifier = Modifier.size(40.dp)
+                                        modifier = Modifier.size(36.dp)
                                     ) {
                                         Icon(
                                             imageVector = Icons.Default.FitnessCenter,
@@ -870,7 +875,7 @@ fun ActiveLoggerScreen(
                                     }
                                     IconButton(
                                         onClick = { swapExerciseDialogTarget = logState.exerciseName },
-                                        modifier = Modifier.size(40.dp)
+                                        modifier = Modifier.size(36.dp)
                                     ) {
                                         Icon(
                                             imageVector = Icons.Default.Refresh,
@@ -882,28 +887,27 @@ fun ActiveLoggerScreen(
                                 }
                             }
 
-                            // Secondary Row: GoalBadge, PR Badge (single line, non-wrapping pill), and altName
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 4.dp),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                verticalAlignment = Alignment.CenterVertically
+                            Spacer(modifier = Modifier.height(VitalSpacing.xs))
+
+                            // Secondary Row: GoalBadge, PR Badge, and altName in adaptive FlowRow to prevent right-side overcrowding
+                            FlowRow(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(VitalSpacing.sm),
+                                verticalArrangement = Arrangement.spacedBy(VitalSpacing.xs)
                             ) {
                                 GoalBadge(
-                                    goal = logState.primaryGoal,
-                                    modifier = Modifier.weight(1f, fill = false)
+                                    goal = logState.primaryGoal
                                 )
                                 if (currentPr > 0f) {
                                     Surface(
-                                        shape = RoundedCornerShape(6.dp),
+                                        shape = VitalShapes.Micro,
                                         color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.7f),
                                         border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary.copy(alpha = 0.35f))
                                     ) {
                                         Row(
-                                            modifier = Modifier.padding(horizontal = 7.dp, vertical = 2.5.dp),
+                                            modifier = Modifier.padding(horizontal = 7.dp, vertical = VitalSpacing.xxs),
                                             verticalAlignment = Alignment.CenterVertically,
-                                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                            horizontalArrangement = Arrangement.spacedBy(VitalSpacing.xs)
                                         ) {
                                             Icon(
                                                 imageVector = Icons.Default.EmojiEvents,
@@ -928,8 +932,7 @@ fun ActiveLoggerScreen(
                                         style = MaterialTheme.typography.labelSmall,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
                                         maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
-                                        softWrap = false
+                                        overflow = TextOverflow.Ellipsis
                                     )
                                 }
                             }
@@ -937,15 +940,15 @@ fun ActiveLoggerScreen(
 
                         // Structured Coaching Cue Box
                         if (logState.coachingCues.isNotBlank()) {
-                            Spacer(modifier = Modifier.height(10.dp))
+                            Spacer(modifier = Modifier.height(VitalSpacing.sm))
                             Surface(
-                                shape = RoundedCornerShape(10.dp),
+                                shape = VitalShapes.Small,
                                 color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f),
                                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
                                 modifier = Modifier.fillMaxWidth()
                             ) {
                                 Row(
-                                    modifier = Modifier.padding(10.dp),
+                                    modifier = Modifier.padding(VitalSpacing.sm),
                                     verticalAlignment = Alignment.Top
                                 ) {
                                     Icon(
@@ -956,18 +959,20 @@ fun ActiveLoggerScreen(
                                             .size(16.dp)
                                             .padding(top = 1.dp)
                                     )
-                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Spacer(modifier = Modifier.width(VitalSpacing.xs))
                                     Text(
                                         text = logState.coachingCues,
                                         style = MaterialTheme.typography.bodySmall,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                        lineHeight = 18.sp
+                                        fontSize = 12.sp,
+                                        lineHeight = 17.sp,
+                                        modifier = Modifier.weight(1f)
                                     )
                                 }
                             }
                         }
 
-                        Spacer(modifier = Modifier.height(14.dp))
+                        Spacer(modifier = Modifier.height(VitalSpacing.md))
 
                         // Set Rows (Streamlined Flat Container)
                         logState.sets.forEachIndexed { setIndex, setInput ->

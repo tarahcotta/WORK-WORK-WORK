@@ -84,6 +84,8 @@ import com.example.data.ExerciseLibraryItem
 import com.example.data.ExerciseLibraryRepository
 import com.example.data.HealthFocusCategory
 import com.example.data.WorkoutRoutineEntity
+import com.example.ui.theme.VitalShapes
+import com.example.ui.theme.VitalSpacing
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
@@ -482,19 +484,18 @@ fun ExerciseCardItem(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f)
         ),
-        shape = RoundedCornerShape(16.dp),
+        shape = VitalShapes.Large,
         border = androidx.compose.foundation.BorderStroke(
             1.dp,
             MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.7f)
         )
     ) {
         Column(
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(VitalSpacing.lg)
         ) {
             // Header Row: Title & Bookmark button
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
@@ -502,12 +503,16 @@ fun ExerciseCardItem(
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
                 )
+
+                Spacer(modifier = Modifier.width(VitalSpacing.sm))
 
                 IconButton(
                     onClick = onToggleBookmark,
-                    modifier = Modifier.size(32.dp)
+                    modifier = Modifier.size(VitalSpacing.xxxl)
                 ) {
                     Icon(
                         imageVector = if (isBookmarked) Icons.Default.Bookmark else Icons.Default.BookmarkBorder,
@@ -517,12 +522,12 @@ fun ExerciseCardItem(
                 }
             }
 
-            Spacer(modifier = Modifier.height(6.dp))
+            Spacer(modifier = Modifier.height(VitalSpacing.xs))
 
             // Badges FlowRow (Category, Muscle Group, Equipment)
             CustomFlowRow(
-                horizontalSpacing = 6.dp,
-                verticalSpacing = 6.dp
+                horizontalSpacing = VitalSpacing.xs,
+                verticalSpacing = VitalSpacing.xs
             ) {
                 // Health Category Badge
                 CategoryPill(
@@ -556,7 +561,7 @@ fun ExerciseCardItem(
                 )
             }
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(VitalSpacing.sm))
 
             // Muscle Group Subtitle
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -566,7 +571,7 @@ fun ExerciseCardItem(
                     modifier = Modifier.size(14.dp),
                     tint = MaterialTheme.colorScheme.primary
                 )
-                Spacer(modifier = Modifier.width(4.dp))
+                Spacer(modifier = Modifier.width(VitalSpacing.xs))
                 Text(
                     text = exercise.muscleGroup,
                     style = MaterialTheme.typography.labelMedium,
@@ -575,7 +580,7 @@ fun ExerciseCardItem(
                 )
             }
 
-            Spacer(modifier = Modifier.height(6.dp))
+            Spacer(modifier = Modifier.height(VitalSpacing.xs))
 
             // Target Bones & Joints
             Text(
@@ -586,7 +591,7 @@ fun ExerciseCardItem(
                 overflow = TextOverflow.Ellipsis
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(VitalSpacing.sm))
 
             // Short Summary
             Text(
@@ -597,7 +602,7 @@ fun ExerciseCardItem(
                 overflow = TextOverflow.Ellipsis
             )
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(VitalSpacing.md))
 
             // Action row
             Row(
@@ -607,9 +612,11 @@ fun ExerciseCardItem(
             ) {
                 Text(
                     text = "View Form Instructions & Tips →",
-                    style = MaterialTheme.typography.labelLarge,
+                    style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.primary,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
         }
@@ -624,9 +631,9 @@ fun CategoryPill(
 ) {
     Box(
         modifier = Modifier
-            .clip(androidx.compose.foundation.shape.CircleShape)
+            .clip(VitalShapes.Pill)
             .background(containerColor)
-            .padding(horizontal = 12.dp, vertical = 6.dp)
+            .padding(horizontal = VitalSpacing.sm, vertical = VitalSpacing.xs)
     ) {
         Text(
             text = text,

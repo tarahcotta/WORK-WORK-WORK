@@ -8,6 +8,8 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -86,6 +88,8 @@ import com.example.ui.components.FloatingRestTimerBar
 import com.example.ui.components.PreWorkoutMobilityCard
 import com.example.ui.components.ProgressiveOverloadTag
 import com.example.ui.components.parseRestPeriodToSeconds
+import com.example.ui.theme.VitalShapes
+import com.example.ui.theme.VitalSpacing
 
 @Composable
 fun RoutineTableScreen(
@@ -470,7 +474,7 @@ fun RoutineTableScreen(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .testTag("exercise_card_${ex.id}"),
-                                    shape = RoundedCornerShape(16.dp),
+                                    shape = VitalShapes.Large,
                                     colors = CardDefaults.cardColors(
                                         containerColor = MaterialTheme.colorScheme.surface
                                     ),
@@ -480,7 +484,7 @@ fun RoutineTableScreen(
                                     Column(
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .padding(16.dp)
+                                            .padding(VitalSpacing.lg)
                                     ) {
                                         // Header Row: Exercise Name & Index
                                         Row(
@@ -501,7 +505,7 @@ fun RoutineTableScreen(
                                                     )
                                                 }
                                             }
-                                            Spacer(modifier = Modifier.width(8.dp))
+                                            Spacer(modifier = Modifier.width(VitalSpacing.sm))
                                             Text(
                                                 text = cleanTitle,
                                                 style = MaterialTheme.typography.titleMedium,
@@ -511,37 +515,42 @@ fun RoutineTableScreen(
                                             )
                                         }
 
-                                        Spacer(modifier = Modifier.height(6.dp))
+                                        Spacer(modifier = Modifier.height(VitalSpacing.xs))
 
+                                        // Alternative Name and GoalBadge row using themed padding and spacers to prevent right-side text overcrowding
                                         Row(
                                             modifier = Modifier.fillMaxWidth(),
-                                            horizontalArrangement = Arrangement.SpaceBetween,
                                             verticalAlignment = Alignment.CenterVertically
                                         ) {
                                             if (altName != null) {
+                                                Spacer(modifier = Modifier.width(VitalSpacing.xxxl))
                                                 Text(
                                                     text = "Alternative: $altName",
                                                     style = MaterialTheme.typography.labelSmall,
                                                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.85f),
-                                                    modifier = Modifier.padding(start = 32.dp)
+                                                    maxLines = 1,
+                                                    overflow = TextOverflow.Ellipsis,
+                                                    modifier = Modifier.weight(1f)
                                                 )
+                                                Spacer(modifier = Modifier.width(VitalSpacing.sm))
                                             } else {
-                                                Spacer(modifier = Modifier.width(1.dp))
+                                                Spacer(modifier = Modifier.weight(1f))
                                             }
                                             GoalBadge(goal = ex.primaryGoal)
                                         }
 
-                                        Spacer(modifier = Modifier.height(12.dp))
+                                        Spacer(modifier = Modifier.height(VitalSpacing.md))
 
                                         // Metric Parameter Chips Row (Sets, Reps, RPE, Rest)
-                                        Row(
+                                        @OptIn(ExperimentalLayoutApi::class)
+                                        FlowRow(
                                             modifier = Modifier.fillMaxWidth(),
-                                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                            verticalAlignment = Alignment.CenterVertically
+                                            horizontalArrangement = Arrangement.spacedBy(VitalSpacing.sm),
+                                            verticalArrangement = Arrangement.spacedBy(VitalSpacing.xs)
                                         ) {
                                             // Sets & Reps
                                             Surface(
-                                                shape = RoundedCornerShape(8.dp),
+                                                shape = VitalShapes.Small,
                                                 color = MaterialTheme.colorScheme.surfaceVariant
                                             ) {
                                                 Text(
@@ -549,13 +558,13 @@ fun RoutineTableScreen(
                                                     style = MaterialTheme.typography.labelMedium,
                                                     fontWeight = FontWeight.SemiBold,
                                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                                                    modifier = Modifier.padding(horizontal = VitalSpacing.sm, vertical = VitalSpacing.xs)
                                                 )
                                             }
 
                                             // RPE Target
                                             Surface(
-                                                shape = RoundedCornerShape(8.dp),
+                                                shape = VitalShapes.Small,
                                                 color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f)
                                             ) {
                                                 Text(
@@ -563,13 +572,13 @@ fun RoutineTableScreen(
                                                     style = MaterialTheme.typography.labelMedium,
                                                     fontWeight = FontWeight.Bold,
                                                     color = MaterialTheme.colorScheme.onPrimaryContainer,
-                                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                                                    modifier = Modifier.padding(horizontal = VitalSpacing.sm, vertical = VitalSpacing.xs)
                                                 )
                                             }
 
                                             // Rest Interval (Interactive)
                                             Surface(
-                                                shape = RoundedCornerShape(8.dp),
+                                                shape = VitalShapes.Small,
                                                 color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.8f),
                                                 modifier = Modifier.clickable {
                                                     activeTimerExerciseName = ex.exerciseName
@@ -578,7 +587,7 @@ fun RoutineTableScreen(
                                                 }
                                             ) {
                                                 Row(
-                                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                                    modifier = Modifier.padding(horizontal = VitalSpacing.sm, vertical = VitalSpacing.xs),
                                                     verticalAlignment = Alignment.CenterVertically
                                                 ) {
                                                     Icon(
@@ -587,7 +596,7 @@ fun RoutineTableScreen(
                                                         tint = MaterialTheme.colorScheme.onSecondaryContainer,
                                                         modifier = Modifier.size(12.dp)
                                                     )
-                                                    Spacer(modifier = Modifier.width(4.dp))
+                                                    Spacer(modifier = Modifier.width(VitalSpacing.xs))
                                                     Text(
                                                         text = ex.restPeriod,
                                                         style = MaterialTheme.typography.labelMedium,
@@ -600,15 +609,17 @@ fun RoutineTableScreen(
 
                                         // Optional Personal Record / Progression Tag
                                         if (prWeight > 0f) {
-                                            Spacer(modifier = Modifier.height(8.dp))
-                                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                            Spacer(modifier = Modifier.height(VitalSpacing.sm))
+                                            Row(
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                horizontalArrangement = Arrangement.spacedBy(VitalSpacing.xs)
+                                            ) {
                                                 Text(
                                                     text = "Previous Best: ${prWeight.toInt()} lbs",
                                                     style = MaterialTheme.typography.labelSmall,
                                                     fontWeight = FontWeight.SemiBold,
                                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                                 )
-                                                Spacer(modifier = Modifier.width(6.dp))
                                                 ProgressiveOverloadTag(
                                                     currentPrLbs = prWeight,
                                                     isReadyForIncrement = true
@@ -618,14 +629,14 @@ fun RoutineTableScreen(
 
                                         // Coaching Cues & Joint Protection Box
                                         if (ex.coachingCues.isNotBlank()) {
-                                            Spacer(modifier = Modifier.height(10.dp))
+                                            Spacer(modifier = Modifier.height(VitalSpacing.sm))
                                             Surface(
-                                                shape = RoundedCornerShape(10.dp),
+                                                shape = VitalShapes.Medium,
                                                 color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
                                                 modifier = Modifier.fillMaxWidth()
                                             ) {
                                                 Row(
-                                                    modifier = Modifier.padding(10.dp),
+                                                    modifier = Modifier.padding(VitalSpacing.sm),
                                                     verticalAlignment = Alignment.Top
                                                 ) {
                                                     Icon(
@@ -636,36 +647,37 @@ fun RoutineTableScreen(
                                                             .size(16.dp)
                                                             .padding(top = 1.dp)
                                                     )
-                                                    Spacer(modifier = Modifier.width(8.dp))
+                                                    Spacer(modifier = Modifier.width(VitalSpacing.sm))
                                                     Text(
                                                         text = ex.coachingCues,
                                                         style = MaterialTheme.typography.bodySmall,
                                                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                                        lineHeight = 18.sp
+                                                        lineHeight = 18.sp,
+                                                        modifier = Modifier.weight(1f)
                                                     )
                                                 }
                                             }
                                         }
 
-                                        Spacer(modifier = Modifier.height(10.dp))
+                                        Spacer(modifier = Modifier.height(VitalSpacing.sm))
 
                                          // Action Row: Form Demo & Rest Timer Launch
                                         Row(
                                             modifier = Modifier.fillMaxWidth(),
-                                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                            horizontalArrangement = Arrangement.spacedBy(VitalSpacing.sm)
                                         ) {
                                             FilledTonalButton(
                                                 onClick = { activeFormDemoExercise = ex.exerciseName },
-                                                shape = RoundedCornerShape(10.dp),
+                                                shape = VitalShapes.Medium,
                                                 modifier = Modifier.weight(1f),
-                                                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
+                                                contentPadding = PaddingValues(horizontal = VitalSpacing.md, vertical = VitalSpacing.sm)
                                             ) {
                                                 Icon(
                                                     imageVector = Icons.Default.SmartDisplay,
                                                     contentDescription = "Watch Exercise Video",
                                                     modifier = Modifier.size(16.dp)
                                                 )
-                                                Spacer(modifier = Modifier.width(6.dp))
+                                                Spacer(modifier = Modifier.width(VitalSpacing.xs))
                                                 Text(
                                                     text = "Exercise Video",
                                                     style = MaterialTheme.typography.labelMedium,
@@ -679,16 +691,16 @@ fun RoutineTableScreen(
                                                     activeTimerInitialSeconds = parseRestPeriodToSeconds(ex.restPeriod)
                                                     isTimerActive = true
                                                 },
-                                                shape = RoundedCornerShape(10.dp),
+                                                shape = VitalShapes.Medium,
                                                 modifier = Modifier.weight(1f),
-                                                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
+                                                contentPadding = PaddingValues(horizontal = VitalSpacing.md, vertical = VitalSpacing.sm)
                                             ) {
                                                 Icon(
                                                     imageVector = Icons.Default.Timer,
                                                     contentDescription = "Rest Interval Timer",
                                                     modifier = Modifier.size(16.dp)
                                                 )
-                                                Spacer(modifier = Modifier.width(6.dp))
+                                                Spacer(modifier = Modifier.width(VitalSpacing.xs))
                                                 Text(
                                                     text = "Rest Timer",
                                                     style = MaterialTheme.typography.labelMedium,
@@ -697,7 +709,7 @@ fun RoutineTableScreen(
                                             }
                                         }
 
-                                        Spacer(modifier = Modifier.height(10.dp))
+                                        Spacer(modifier = Modifier.height(VitalSpacing.sm))
 
                                         // Optional Personal Note-Taking Field for Equipment, Feel, or Form
                                         var isEditingNotes by remember(ex.id) { mutableStateOf(false) }
