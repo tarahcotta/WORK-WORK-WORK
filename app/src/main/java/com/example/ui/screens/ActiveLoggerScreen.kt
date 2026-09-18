@@ -25,6 +25,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
@@ -540,9 +541,9 @@ fun ActiveLoggerScreen(
                     AnimatedVisibility(
                         visible = isTimerRunning || timerRemainingSeconds > 0,
                         enter = if (isReducedMotion) fadeIn(tween(0)) else slideInVertically(
-                            animationSpec = tween(durationMillis = 200, easing = FastOutSlowInEasing),
+                            animationSpec = tween(durationMillis = 180, easing = FastOutSlowInEasing),
                             initialOffsetY = { it }
-                        ) + fadeIn(animationSpec = tween(150)),
+                        ) + fadeIn(animationSpec = tween(120)),
                         exit = if (isReducedMotion) fadeOut(tween(0)) else slideOutVertically(
                             animationSpec = tween(durationMillis = 150, easing = FastOutLinearInEasing),
                             targetOffsetY = { it }
@@ -551,110 +552,133 @@ fun ActiveLoggerScreen(
                         Surface(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(bottom = 10.dp),
-                            shape = RoundedCornerShape(12.dp),
-                            color = MaterialTheme.colorScheme.primaryContainer,
-                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.5f))
+                                .padding(bottom = 8.dp),
+                            shape = RoundedCornerShape(8.dp),
+                            color = MaterialTheme.colorScheme.surface,
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)),
+                            shadowElevation = 4.dp
                         ) {
                             Column(modifier = Modifier.fillMaxWidth()) {
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = 12.dp, vertical = 6.dp),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
+                                BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                                    val isCompactWidth = maxWidth < 380.dp
+
                                     Row(
                                         modifier = Modifier
-                                            .weight(1f, fill = false)
-                                            .clickable { showTimerSettingsSheet = true },
-                                        verticalAlignment = Alignment.CenterVertically
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 10.dp, vertical = 6.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween
                                     ) {
-                                        Icon(
-                                            imageVector = Icons.Default.Timer,
-                                            contentDescription = "Rest Interval Active",
-                                            tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                                            modifier = Modifier.size(18.dp)
-                                        )
-                                        Spacer(modifier = Modifier.width(6.dp))
-                                        Text(
-                                            text = "Rest: ${timerRemainingSeconds / 60}:${"%02d".format(timerRemainingSeconds % 60)}",
-                                            style = TelemetryTimerStyle,
-                                            color = MaterialTheme.colorScheme.onPrimaryContainer,
-                                            maxLines = 1
-                                        )
-                                        if (activeTimerExerciseName.isNotBlank()) {
-                                            val (timerTitle, _) = parseExerciseName(activeTimerExerciseName)
-                                            val cleanTimerTitle = timerTitle.replace(Regex("\\s*\\([^)]*\\)"), "").trim()
+                                        Row(
+                                            modifier = Modifier
+                                                .weight(1f, fill = false)
+                                                .clickable { showTimerSettingsSheet = true },
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Surface(
+                                                shape = RoundedCornerShape(4.dp),
+                                                color = MaterialTheme.colorScheme.primaryContainer
+                                            ) {
+                                                Row(
+                                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 3.dp),
+                                                    verticalAlignment = Alignment.CenterVertically
+                                                ) {
+                                                    Icon(
+                                                        imageVector = Icons.Default.Timer,
+                                                        contentDescription = "Rest Interval Active",
+                                                        tint = MaterialTheme.colorScheme.primary,
+                                                        modifier = Modifier.size(14.dp)
+                                                    )
+                                                    if (!isCompactWidth) {
+                                                        Spacer(modifier = Modifier.width(4.dp))
+                                                        Text(
+                                                            text = "REST",
+                                                            style = com.example.ui.theme.TelemetryBadgeStyle,
+                                                            color = MaterialTheme.colorScheme.primary
+                                                        )
+                                                    }
+                                                }
+                                            }
                                             Spacer(modifier = Modifier.width(6.dp))
                                             Text(
-                                                text = "· $cleanTimerTitle",
-                                                style = MaterialTheme.typography.labelSmall,
-                                                fontWeight = FontWeight.SemiBold,
-                                                maxLines = 1,
-                                                overflow = TextOverflow.Ellipsis,
-                                                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.85f),
-                                                modifier = Modifier.widthIn(max = 100.dp)
+                                                text = "${timerRemainingSeconds / 60}:${"%02d".format(timerRemainingSeconds % 60)}",
+                                                style = TelemetryTimerStyle,
+                                                color = MaterialTheme.colorScheme.onSurface,
+                                                maxLines = 1
                                             )
+                                            if (activeTimerExerciseName.isNotBlank()) {
+                                                val (timerTitle, _) = parseExerciseName(activeTimerExerciseName)
+                                                val cleanTimerTitle = timerTitle.replace(Regex("\\s*\\([^)]*\\)"), "").trim()
+                                                Spacer(modifier = Modifier.width(4.dp))
+                                                Text(
+                                                    text = "· $cleanTimerTitle",
+                                                    style = MaterialTheme.typography.labelSmall,
+                                                    fontWeight = FontWeight.SemiBold,
+                                                    maxLines = 1,
+                                                    overflow = TextOverflow.Ellipsis,
+                                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                    modifier = Modifier.widthIn(max = if (isCompactWidth) 90.dp else 120.dp)
+                                                )
+                                            }
                                         }
-                                    }
-                                    Row(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.CenterVertically) {
-                                        IconButton(
-                                            onClick = { showTimerSettingsSheet = true },
-                                            modifier = Modifier.size(36.dp)
-                                        ) {
-                                            Icon(
-                                                imageVector = Icons.Default.Tune,
-                                                contentDescription = "Configure Rest Presets",
-                                                tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                                                modifier = Modifier.size(16.dp)
-                                            )
-                                        }
-                                        Surface(
-                                            modifier = Modifier.clickable {
-                                                timerRemainingSeconds = (timerRemainingSeconds + 30)
-                                                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                                            },
-                                            shape = RoundedCornerShape(8.dp),
-                                            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f),
-                                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.3f))
-                                        ) {
-                                            Text(
-                                                text = "+30s",
-                                                style = MaterialTheme.typography.labelSmall,
-                                                fontWeight = FontWeight.Bold,
-                                                color = MaterialTheme.colorScheme.primary,
-                                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp)
-                                            )
-                                        }
-                                        IconButton(
-                                            onClick = {
-                                                isTimerRunning = !isTimerRunning
-                                                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                                            },
-                                            modifier = Modifier.size(36.dp)
-                                        ) {
-                                            Icon(
-                                                imageVector = if (isTimerRunning) Icons.Default.Pause else Icons.Default.PlayArrow,
-                                                contentDescription = if (isTimerRunning) "Pause Rest" else "Resume Rest",
-                                                tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                                                modifier = Modifier.size(16.dp)
-                                            )
-                                        }
-                                        IconButton(
-                                            onClick = {
-                                                timerRemainingSeconds = 0
-                                                isTimerRunning = false
-                                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                            },
-                                            modifier = Modifier.size(36.dp)
-                                        ) {
-                                            Icon(
-                                                imageVector = Icons.Default.Close,
-                                                contentDescription = "Skip Rest",
-                                                tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                                                modifier = Modifier.size(16.dp)
-                                            )
+
+                                        Row(horizontalArrangement = Arrangement.spacedBy(2.dp), verticalAlignment = Alignment.CenterVertically) {
+                                            IconButton(
+                                                onClick = { showTimerSettingsSheet = true },
+                                                modifier = Modifier.size(32.dp)
+                                            ) {
+                                                Icon(
+                                                    imageVector = Icons.Default.Tune,
+                                                    contentDescription = "Configure Rest Presets",
+                                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                    modifier = Modifier.size(15.dp)
+                                                )
+                                            }
+                                            Surface(
+                                                modifier = Modifier.clickable {
+                                                    timerRemainingSeconds = (timerRemainingSeconds + 30)
+                                                    haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                                },
+                                                shape = RoundedCornerShape(4.dp),
+                                                color = MaterialTheme.colorScheme.surfaceVariant,
+                                                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+                                            ) {
+                                                Text(
+                                                    text = "+30S",
+                                                    style = com.example.ui.theme.TelemetryBadgeStyle,
+                                                    color = MaterialTheme.colorScheme.primary,
+                                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 4.dp)
+                                                )
+                                            }
+                                            IconButton(
+                                                onClick = {
+                                                    isTimerRunning = !isTimerRunning
+                                                    haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                                },
+                                                modifier = Modifier.size(32.dp)
+                                            ) {
+                                                Icon(
+                                                    imageVector = if (isTimerRunning) Icons.Default.Pause else Icons.Default.PlayArrow,
+                                                    contentDescription = if (isTimerRunning) "Pause Rest" else "Resume Rest",
+                                                    tint = MaterialTheme.colorScheme.onSurface,
+                                                    modifier = Modifier.size(15.dp)
+                                                )
+                                            }
+                                            IconButton(
+                                                onClick = {
+                                                    timerRemainingSeconds = 0
+                                                    isTimerRunning = false
+                                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                                },
+                                                modifier = Modifier.size(32.dp)
+                                            ) {
+                                                Icon(
+                                                    imageVector = Icons.Default.Close,
+                                                    contentDescription = "Skip Rest",
+                                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                    modifier = Modifier.size(15.dp)
+                                                )
+                                            }
                                         }
                                     }
                                 }
@@ -769,7 +793,7 @@ fun ActiveLoggerScreen(
                         .fillMaxWidth()
                         .padding(bottom = 16.dp)
                         .testTag("exercise_log_card_$exIndex"),
-                    shape = RoundedCornerShape(18.dp),
+                    shape = RoundedCornerShape(12.dp),
                     colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.surface),
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f))
                 ) {
@@ -810,8 +834,9 @@ fun ActiveLoggerScreen(
                                         style = MaterialTheme.typography.titleMedium,
                                         fontWeight = FontWeight.Bold,
                                         color = MaterialTheme.colorScheme.onSurface,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis
+                                        maxLines = 2,
+                                        overflow = TextOverflow.Ellipsis,
+                                        lineHeight = 20.sp
                                     )
                                 }
 
@@ -947,21 +972,21 @@ fun ActiveLoggerScreen(
                         // Set Rows (Streamlined Flat Container)
                         logState.sets.forEachIndexed { setIndex, setInput ->
                             val cardBgColor by animateColorAsState(
-                                targetValue = if (setInput.isCompleted) MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.18f),
+                                targetValue = if (setInput.isCompleted) MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f),
                                 animationSpec = tween(durationMillis = if (isReducedMotion) 0 else 180, easing = FastOutSlowInEasing),
                                 label = "set_card_bg_${exIndex}_$setIndex"
                             )
                             val cardBorderColor by animateColorAsState(
-                                targetValue = if (setInput.isCompleted) MaterialTheme.colorScheme.primary.copy(alpha = 0.35f) else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f),
+                                targetValue = if (setInput.isCompleted) MaterialTheme.colorScheme.primary.copy(alpha = 0.5f) else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f),
                                 animationSpec = tween(durationMillis = if (isReducedMotion) 0 else 180, easing = FastOutSlowInEasing),
                                 label = "set_card_border_${exIndex}_$setIndex"
                             )
                             Surface(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(vertical = 4.dp)
+                                    .padding(vertical = 3.dp)
                                     .testTag("set_card_${exIndex}_$setIndex"),
-                                shape = RoundedCornerShape(12.dp),
+                                shape = RoundedCornerShape(8.dp),
                                 color = cardBgColor,
                                 border = BorderStroke(1.dp, cardBorderColor)
                             ) {
@@ -977,15 +1002,15 @@ fun ActiveLoggerScreen(
                                         horizontalArrangement = Arrangement.SpaceBetween
                                     ) {
                                         Surface(
-                                            shape = RoundedCornerShape(8.dp),
-                                            color = if (setInput.isCompleted) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant
+                                            shape = RoundedCornerShape(4.dp),
+                                            color = if (setInput.isCompleted) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
+                                            border = BorderStroke(1.dp, if (setInput.isCompleted) MaterialTheme.colorScheme.primary.copy(alpha = 0.6f) else MaterialTheme.colorScheme.outlineVariant)
                                         ) {
                                             Text(
                                                 text = "SET ${setInput.setNumber}",
-                                                style = MaterialTheme.typography.labelMedium,
-                                                fontWeight = FontWeight.Bold,
-                                                color = if (setInput.isCompleted) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
-                                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
+                                                style = com.example.ui.theme.TelemetryBadgeStyle,
+                                                color = if (setInput.isCompleted) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
                                             )
                                         }
 
@@ -2175,9 +2200,9 @@ fun CompactGymStepper(
 
     Row(
         modifier = modifier
-            .height(56.dp)
-            .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(12.dp))
-            .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f), RoundedCornerShape(12.dp)),
+            .height(54.dp)
+            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f), RoundedCornerShape(6.dp))
+            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(6.dp)),
         verticalAlignment = Alignment.CenterVertically
     ) {
         IconButton(
@@ -2211,13 +2236,14 @@ fun CompactGymStepper(
                 Text(
                     text = valueText.ifEmpty { "0" },
                     style = TelemetryNumeralStyle,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = MaterialTheme.colorScheme.onSurface,
                     textAlign = TextAlign.Center
                 )
                 Text(
-                    text = label.lowercase(),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                    text = label.uppercase(),
+                    style = com.example.ui.theme.TelemetryBadgeStyle,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                    fontSize = 9.sp
                 )
             }
         }

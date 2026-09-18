@@ -151,6 +151,10 @@ fun MuscleWikiVideoPlayer(
                     }
 
                     setOnErrorListener { _, what, extra ->
+                        // -38 corresponds to -EPERM / invalid state during state transition / shutdown
+                        if (extra == -38 || what == -38) {
+                            return@setOnErrorListener true
+                        }
                         isLoading = false
                         hasError = true
                         true // Handled
@@ -561,17 +565,23 @@ fun MuscleWikiVideoPlayer(
     DisposableEffect(videoUrl) {
         onDispose {
             try {
+                videoViewRef?.stopPlayback()
+            } catch (e: Exception) {
+                // Ignore cleanup errors
+            }
+            try {
                 mediaPlayerRef?.let { mp ->
-                    mp.stop()
+                    if (mp.isPlaying) {
+                        mp.stop()
+                    }
+                    mp.reset()
                     mp.release()
                 }
             } catch (e: Exception) {
                 // Suppress MediaPlayer invalid state error (-38, 0)
-            }
-            try {
-                videoViewRef?.stopPlayback()
-            } catch (e: Exception) {
-                // Ignore cleanup errors
+            } finally {
+                mediaPlayerRef = null
+                videoViewRef = null
             }
         }
     }

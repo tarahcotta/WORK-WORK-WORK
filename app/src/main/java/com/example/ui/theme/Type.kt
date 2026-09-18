@@ -97,6 +97,15 @@ val Typography = Typography(
 )
 
 // Telemetry & Instrument Numeric Styles (Monospace / Tabular alignment for weights, reps, timers)
+val TelemetryNumeralLg = TextStyle(
+    fontFamily = SpaceGrotesk,
+    fontWeight = FontWeight.Bold,
+    fontSize = 28.sp,
+    lineHeight = 32.sp,
+    letterSpacing = (-0.5).sp,
+    fontFeatureSettings = "tnum"
+)
+
 val TelemetryNumeralStyle = TextStyle(
     fontFamily = SpaceGrotesk,
     fontWeight = FontWeight.Bold,
@@ -117,9 +126,18 @@ val TelemetryHeaderStyle = TextStyle(
 val TelemetryTimerStyle = TextStyle(
     fontFamily = SpaceGrotesk,
     fontWeight = FontWeight.Bold,
-    fontSize = 14.sp,
+    fontSize = 15.sp,
     lineHeight = 18.sp,
     letterSpacing = 0.5.sp,
+    fontFeatureSettings = "tnum"
+)
+
+val TelemetryBadgeStyle = TextStyle(
+    fontFamily = SpaceGrotesk,
+    fontWeight = FontWeight.Bold,
+    fontSize = 10.sp,
+    lineHeight = 12.sp,
+    letterSpacing = 1.5.sp,
     fontFeatureSettings = "tnum"
 )
 

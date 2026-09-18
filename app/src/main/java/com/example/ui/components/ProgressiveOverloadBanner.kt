@@ -11,12 +11,15 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -244,9 +247,10 @@ fun ProgressiveOverloadHighlightCard(
         modifier = modifier
             .fillMaxWidth()
             .testTag("progressive_overload_highlight_card"),
-        shape = RoundedCornerShape(22.dp),
+        shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Column(modifier = Modifier.padding(18.dp)) {
             Row(
@@ -256,16 +260,16 @@ fun ProgressiveOverloadHighlightCard(
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Surface(
-                        shape = CircleShape,
+                        shape = RoundedCornerShape(6.dp),
                         color = MaterialTheme.colorScheme.primaryContainer,
-                        modifier = Modifier.size(36.dp)
+                        modifier = Modifier.size(34.dp)
                     ) {
                         Box(contentAlignment = Alignment.Center) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.TrendingUp,
                                 contentDescription = "Icon",
                                 tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(20.dp)
+                                modifier = Modifier.size(18.dp)
                             )
                         }
                     }
@@ -274,13 +278,12 @@ fun ProgressiveOverloadHighlightCard(
 
                     Column {
                         Text(
-                            text = "Progressive Overload",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface
+                            text = "PROGRESSIVE OVERLOAD STATUS",
+                            style = com.example.ui.theme.TelemetryBadgeStyle,
+                            color = MaterialTheme.colorScheme.primary
                         )
                         Text(
-                            text = "Readiness to increase weight based on your recent feedback",
+                            text = "Adaptive Tensile & Bone Loading Increments",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -292,8 +295,9 @@ fun ProgressiveOverloadHighlightCard(
 
             if (overloadList.isEmpty()) {
                 Surface(
-                    shape = RoundedCornerShape(14.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f),
+                    shape = RoundedCornerShape(8.dp),
+                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Row(
@@ -317,12 +321,17 @@ fun ProgressiveOverloadHighlightCard(
             } else {
                 overloadList.take(3).forEach { info ->
                     Surface(
-                        shape = RoundedCornerShape(14.dp),
-                        color = if (info.isReadyToIncrement) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f)
-                        else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f),
+                        shape = RoundedCornerShape(8.dp),
+                        color = if (info.isReadyToIncrement) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
+                        else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                        border = BorderStroke(
+                            1.dp,
+                            if (info.isReadyToIncrement) MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
+                            else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+                        ),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(bottom = 10.dp)
+                            .padding(bottom = 8.dp)
                     ) {
                         Row(
                             modifier = Modifier
@@ -332,26 +341,28 @@ fun ProgressiveOverloadHighlightCard(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Column(modifier = Modifier.weight(1f)) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                @OptIn(ExperimentalLayoutApi::class)
+                                FlowRow(
+                                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
                                     Text(
                                         text = info.exerciseName,
                                         style = MaterialTheme.typography.titleSmall,
                                         fontWeight = FontWeight.Bold,
                                         color = MaterialTheme.colorScheme.onSurface,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
-                                        modifier = Modifier.weight(1f, fill = false)
+                                        maxLines = 2,
+                                        overflow = TextOverflow.Ellipsis
                                     )
                                     if (info.isReadyToIncrement) {
-                                        Spacer(modifier = Modifier.width(6.dp))
                                         Surface(
-                                            shape = RoundedCornerShape(6.dp),
+                                            shape = RoundedCornerShape(4.dp),
                                             color = MaterialTheme.colorScheme.primary
                                         ) {
                                             Text(
-                                                text = "+5 LBS READY",
-                                                style = MaterialTheme.typography.labelSmall,
-                                                fontWeight = FontWeight.ExtraBold,
+                                                text = "+5 LBS DOSAGE",
+                                                style = com.example.ui.theme.TelemetryBadgeStyle,
                                                 color = MaterialTheme.colorScheme.onPrimary,
                                                 fontSize = 9.sp,
                                                 maxLines = 1,
@@ -378,15 +389,15 @@ fun ProgressiveOverloadHighlightCard(
 
                             Column(horizontalAlignment = Alignment.End) {
                                 Text(
-                                    text = "Current PR",
-                                    style = MaterialTheme.typography.labelSmall,
+                                    text = "BASELINE PR",
+                                    style = com.example.ui.theme.TelemetryBadgeStyle,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    fontSize = 10.sp
+                                    fontSize = 9.sp
                                 )
                                 Text(
                                     text = "${info.currentPrLbs.toInt()} LBS",
-                                    style = MaterialTheme.typography.titleSmall,
-                                    fontWeight = FontWeight.ExtraBold,
+                                    style = com.example.ui.theme.TelemetryNumeralStyle,
+                                    fontSize = 16.sp,
                                     color = MaterialTheme.colorScheme.primary
                                 )
                                 if (info.isReadyToIncrement) {

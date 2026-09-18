@@ -1,15 +1,19 @@
 package com.example.ui.screens
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -58,6 +62,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import com.example.ui.theme.TelemetryBadgeStyle
+import com.example.ui.theme.TelemetryNumeralLg
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -128,135 +134,178 @@ fun HomeScreen(
             Spacer(modifier = Modifier.height(16.dp))
         }
 
-        // Hero Card
+        // Hero Card - Orthopedic Telemetry Monolith
         Card(
             modifier = Modifier
                 .fillMaxWidth()
                 .testTag("home_hero_card"),
-            shape = RoundedCornerShape(24.dp),
+            shape = RoundedCornerShape(12.dp),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)),
+            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
         ) {
-            Box(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(
-                        Brush.verticalGradient(
-                            colors = listOf(
-                                MaterialTheme.colorScheme.primaryContainer,
-                                MaterialTheme.colorScheme.surface
-                            )
-                        )
-                    )
                     .padding(20.dp)
             ) {
-                Column {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    WomensStrengthLogoIcon(size = 44.dp)
+
+                    OutlinedButton(
+                        onClick = onNavigateToAssessment,
+                        shape = RoundedCornerShape(8.dp),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                        modifier = Modifier.testTag("edit_assessment_button")
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = "Icon",
+                            modifier = Modifier.size(14.dp)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = "Assessment Profile",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                @OptIn(ExperimentalLayoutApi::class)
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    Surface(
+                        shape = RoundedCornerShape(4.dp),
+                        color = MaterialTheme.colorScheme.primaryContainer
+                    ) {
+                        Text(
+                            text = "CLINICAL AXIAL OVERLOAD",
+                            style = TelemetryBadgeStyle,
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                        )
+                    }
+                    Text(
+                        text = "OSTEOGENIC PROTOCOL",
+                        style = TelemetryBadgeStyle,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = "BONE DENSITY & HEAVY OVERLOAD",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    letterSpacing = (-0.5).sp
+                )
+
+                Spacer(modifier = Modifier.height(6.dp))
+
+                Text(
+                    text = "High-velocity tensile and compressive loading engineered to stimulate osteoblast bone deposition and safeguard joint longevity.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    lineHeight = 20.sp
+                )
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                // Telemetry Metrics Strip (Milled Machined Divider with Weight Balance)
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(8.dp),
+                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
+                ) {
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 12.dp, horizontal = 6.dp),
+                        horizontalArrangement = Arrangement.SpaceEvenly,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        WomensStrengthLogoIcon(size = 48.dp)
-
-                        OutlinedButton(
-                            onClick = onNavigateToAssessment,
-                            shape = RoundedCornerShape(20.dp),
-                            modifier = Modifier.testTag("edit_assessment_button")
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Edit,
-                                contentDescription = "Icon",
-                                modifier = Modifier.size(16.dp)
+                        Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
+                            MetricItem(
+                                label = "Workouts",
+                                value = "$totalSessionsLogged",
+                                subtext = "completed"
                             )
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text(
-                                text = "Assessment Profile",
-                                style = MaterialTheme.typography.labelMedium
+                        }
+                        Box(
+                            modifier = Modifier
+                                .width(1.dp)
+                                .height(36.dp)
+                                .background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+                        )
+                        Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
+                            MetricItem(
+                                label = "Stimulus Load",
+                                value = "${totalVolumeAllTime / 1000}k",
+                                subtext = "lbs axial"
+                            )
+                        }
+                        Box(
+                            modifier = Modifier
+                                .width(1.dp)
+                                .height(36.dp)
+                                .background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+                        )
+                        Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
+                            MetricItem(
+                                label = "Prescription",
+                                value = "${profile?.scheduleDaysPerWeek ?: 3} Days",
+                                subtext = "cadence"
                             )
                         }
                     }
+                }
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(20.dp))
 
-                    Text(
-                        text = "WOMEN'S STRENGTH & LONGEVITY",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = MaterialTheme.colorScheme.primary,
-                        letterSpacing = 1.sp
+                // Primary Start Workout CTA (Adaptive Height & Multiline Safe)
+                Button(
+                    onClick = {
+                        if (routines.isNotEmpty()) {
+                            onSelectRoutine(routines.first())
+                        }
+                        onNavigateToLogger()
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = 52.dp)
+                        .testTag("start_workout_cta"),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary
                     )
-
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.PlayArrow,
+                        contentDescription = "Icon",
+                        tint = MaterialTheme.colorScheme.onPrimary
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "AGE POWERFULLY & RECOVER",
-                        style = MaterialTheme.typography.labelMedium,
+                        text = "Begin Heavy Resistance Session",
+                        style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.secondary,
-                        letterSpacing = 1.5.sp
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        textAlign = TextAlign.Center,
+                        maxLines = 2
                     )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Text(
-                        text = "Empowered strength programming designed for bone mineral density, joint health, and muscle preservation.",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-
-                    Spacer(modifier = Modifier.height(20.dp))
-
-                    // Metrics Strip
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(16.dp))
-                            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f))
-                            .padding(14.dp),
-                        horizontalArrangement = Arrangement.SpaceAround
-                    ) {
-                        MetricItem(
-                            label = "Workouts",
-                            value = "$totalSessionsLogged",
-                            subtext = "Logged"
-                        )
-                        MetricItem(
-                            label = "Total Volume",
-                            value = "${totalVolumeAllTime / 1000}k",
-                            subtext = "lbs lifted"
-                        )
-                        MetricItem(
-                            label = "Schedule",
-                            value = "${profile?.scheduleDaysPerWeek ?: 3} Days",
-                            subtext = "per week"
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(20.dp))
-
-                    // Primary Start Workout CTA
-                    Button(
-                        onClick = {
-                            if (routines.isNotEmpty()) {
-                                onSelectRoutine(routines.first())
-                            }
-                            onNavigateToLogger()
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(52.dp)
-                            .testTag("start_workout_cta"),
-                        shape = RoundedCornerShape(14.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary
-                        )
-                    ) {
-                        Icon(imageVector = Icons.Default.PlayArrow, contentDescription = "Icon")
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = "Start Live Workout Session",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
+                }
 
                     if (onNavigateToActivity != null) {
                         Spacer(modifier = Modifier.height(10.dp))
@@ -264,26 +313,29 @@ fun HomeScreen(
                             onClick = onNavigateToActivity,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(48.dp)
+                                .heightIn(min = 46.dp)
                                 .testTag("view_activity_summary_cta"),
-                            shape = RoundedCornerShape(14.dp)
+                            shape = RoundedCornerShape(8.dp),
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
                         ) {
                             Icon(
                                 imageVector = Icons.Default.History,
                                 contentDescription = "Icon",
-                                modifier = Modifier.size(18.dp)
+                                modifier = Modifier.size(16.dp)
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
-                                text = "View Activity & Volume Consistency",
-                                style = MaterialTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.SemiBold
+                                text = "View Longitudinal Activity & Volume",
+                                style = MaterialTheme.typography.bodySmall,
+                                fontWeight = FontWeight.SemiBold,
+                                textAlign = TextAlign.Center,
+                                maxLines = 2
                             )
                         }
                     }
 
                     if (viewModel != null) {
-                        Spacer(modifier = Modifier.height(10.dp))
+                        Spacer(modifier = Modifier.height(8.dp))
                         TextButton(
                             onClick = { viewModel.replayOnboarding() },
                             modifier = Modifier
@@ -293,13 +345,13 @@ fun HomeScreen(
                             Icon(
                                 imageVector = Icons.Default.Shield,
                                 contentDescription = "Icon",
-                                modifier = Modifier.size(18.dp),
+                                modifier = Modifier.size(16.dp),
                                 tint = MaterialTheme.colorScheme.primary
                             )
                             Spacer(modifier = Modifier.width(6.dp))
                             Text(
-                                text = "Replay Progressive Overload Onboarding",
-                                style = MaterialTheme.typography.bodyMedium,
+                                text = "Replay Progressive Overload Protocols",
+                                style = MaterialTheme.typography.labelMedium,
                                 fontWeight = FontWeight.SemiBold,
                                 color = MaterialTheme.colorScheme.primary
                             )
@@ -307,7 +359,6 @@ fun HomeScreen(
                     }
                 }
             }
-        }
 
         Spacer(modifier = Modifier.height(20.dp))
 
@@ -668,14 +719,13 @@ fun MetricItem(label: String, value: String, subtext: String) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
             text = value,
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold,
+            style = TelemetryNumeralLg,
             color = MaterialTheme.colorScheme.primary
         )
+        Spacer(modifier = Modifier.height(2.dp))
         Text(
-            text = label,
-            style = MaterialTheme.typography.labelMedium,
-            fontWeight = FontWeight.SemiBold,
+            text = label.uppercase(),
+            style = TelemetryBadgeStyle,
             color = MaterialTheme.colorScheme.onSurface
         )
         Text(
