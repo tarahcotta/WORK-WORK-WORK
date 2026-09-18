@@ -33,6 +33,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.ui.components.CustomFlowRow
@@ -482,42 +483,49 @@ fun PlateCalculatorScreen(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Row(
+                                    modifier = Modifier.weight(1f, fill = false),
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.spacedBy(10.dp)
                                 ) {
                                     Box(
                                         modifier = Modifier
-                                            .size(24.dp)
+                                            .size(26.dp)
                                             .background(pc.color, RoundedCornerShape(4.dp)),
                                         contentAlignment = Alignment.Center
                                     ) {
                                         Text(
                                             text = if (pc.plateWeight % 1.0 == 0.0) "${pc.plateWeight.toInt()}" else "${pc.plateWeight}",
-                                            fontSize = 9.sp,
+                                            fontSize = 10.sp,
                                             fontWeight = FontWeight.Bold,
                                             color = chipTextColor
                                         )
                                     }
-                                    Column {
+                                    Column(modifier = Modifier.weight(1f, fill = false)) {
                                         Text(
                                             text = "${if (pc.plateWeight % 1.0 == 0.0) pc.plateWeight.toInt() else pc.plateWeight} lbs Plate",
                                             style = MaterialTheme.typography.bodyMedium,
-                                            fontWeight = FontWeight.SemiBold
+                                            fontWeight = FontWeight.SemiBold,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
                                         )
                                         if (selectedCategory != EquipmentCategory.MACHINE_STACK) {
                                             Text(
                                                 text = "${perSideContrib} lbs/side • ${totalContrib.toInt()} lbs total",
                                                 style = MaterialTheme.typography.labelSmall,
-                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis
                                             )
                                         }
                                     }
                                 }
+                                Spacer(modifier = Modifier.width(8.dp))
                                 Text(
                                     text = "× ${pc.count} $countLabel",
                                     style = MaterialTheme.typography.titleSmall,
                                     fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.primary
+                                    color = MaterialTheme.colorScheme.primary,
+                                    maxLines = 1
                                 )
                             }
                         }
@@ -622,7 +630,7 @@ fun PlateCalculatorScreen(
                 selectedTabIndex = selectedCategory.ordinal,
                 containerColor = MaterialTheme.colorScheme.surface,
                 contentColor = MaterialTheme.colorScheme.primary,
-                edgePadding = 0.dp,
+                edgePadding = 8.dp,
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(14.dp))
@@ -631,13 +639,15 @@ fun PlateCalculatorScreen(
                     Tab(
                         selected = selectedCategory == cat,
                         onClick = { selectedCategory = cat },
+                        modifier = Modifier.defaultMinSize(minHeight = 48.dp),
                         text = {
                             Text(
                                 text = cat.label,
                                 fontWeight = if (selectedCategory == cat) FontWeight.Bold else FontWeight.SemiBold,
                                 color = if (selectedCategory == cat) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
                                 fontSize = 13.sp,
-                                maxLines = 1
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
                     )

@@ -350,7 +350,7 @@ fun QuickPlateCalculatorDialog(
                                 verticalArrangement = Arrangement.spacedBy(6.dp)
                             ) {
                                 plateBreakdown.forEach { p ->
-                                    val isLightBadge = p.color == Color(0xFFFBC02D) || p.plateWeight == 35.0
+                                    val isLightBadge = p.color == PlateTokens.PlateYellow || p.plateWeight == 35.0
                                     val plateLabel = if (p.plateWeight % 1.0 == 0.0) "${p.plateWeight.toInt()}" else "${p.plateWeight}"
                                     Surface(
                                         shape = RoundedCornerShape(8.dp),
@@ -358,12 +358,12 @@ fun QuickPlateCalculatorDialog(
                                         border = BorderStroke(1.dp, if (isLightBadge) Color(0xFFF57F17) else p.color.copy(alpha = 0.6f))
                                     ) {
                                         Row(
-                                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp),
                                             verticalAlignment = Alignment.CenterVertically
                                         ) {
                                             Box(
                                                 modifier = Modifier
-                                                    .size(10.dp)
+                                                    .size(12.dp)
                                                     .clip(CircleShape)
                                                     .background(p.color)
                                             )
@@ -372,7 +372,8 @@ fun QuickPlateCalculatorDialog(
                                                 text = "${p.count} × $plateLabel lb",
                                                 style = MaterialTheme.typography.labelSmall,
                                                 fontWeight = FontWeight.Bold,
-                                                color = MaterialTheme.colorScheme.onSurface
+                                                color = MaterialTheme.colorScheme.onSurface,
+                                                maxLines = 1
                                             )
                                         }
                                     }

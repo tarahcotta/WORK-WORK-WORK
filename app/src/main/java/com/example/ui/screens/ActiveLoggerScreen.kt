@@ -568,7 +568,7 @@ fun ActiveLoggerScreen(
                                 ) {
                                     Row(
                                         modifier = Modifier
-                                            .weight(1f)
+                                            .weight(1f, fill = false)
                                             .clickable { showTimerSettingsSheet = true },
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
@@ -582,7 +582,8 @@ fun ActiveLoggerScreen(
                                         Text(
                                             text = "Rest: ${timerRemainingSeconds / 60}:${"%02d".format(timerRemainingSeconds % 60)}",
                                             style = TelemetryTimerStyle,
-                                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                            maxLines = 1
                                         )
                                         if (activeTimerExerciseName.isNotBlank()) {
                                             val (timerTitle, _) = parseExerciseName(activeTimerExerciseName)
@@ -595,7 +596,7 @@ fun ActiveLoggerScreen(
                                                 maxLines = 1,
                                                 overflow = TextOverflow.Ellipsis,
                                                 color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.85f),
-                                                modifier = Modifier.widthIn(max = 140.dp)
+                                                modifier = Modifier.widthIn(max = 100.dp)
                                             )
                                         }
                                     }
