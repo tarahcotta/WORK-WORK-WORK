@@ -933,7 +933,7 @@ private fun parseExerciseTitle(rawName: String): Pair<String, String?> {
 }
 
 @Composable
-fun GoalBadge(goal: String) {
+fun GoalBadge(goal: String, modifier: Modifier = Modifier) {
     val (bgColor, textColor, icon) = when {
         goal.contains("Bone", ignoreCase = true) || goal.contains("Spine", ignoreCase = true) || goal.contains("Axial", ignoreCase = true) ->
             Triple(MaterialTheme.colorScheme.primaryContainer, MaterialTheme.colorScheme.onPrimaryContainer, Icons.Default.Shield)
@@ -947,6 +947,7 @@ fun GoalBadge(goal: String) {
     }
 
     Surface(
+        modifier = modifier,
         shape = RoundedCornerShape(8.dp),
         color = bgColor
     ) {

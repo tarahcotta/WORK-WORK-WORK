@@ -26,10 +26,12 @@ android {
     val firebaseApiKey = (System.getenv("FIREBASE_API_KEY") ?: "").replace("\"", "\\\"")
     val firebaseAppId = (System.getenv("FIREBASE_APP_ID") ?: "").replace("\"", "\\\"")
     val firebaseProjectId = (System.getenv("FIREBASE_PROJECT_ID") ?: "").replace("\"", "\\\"")
+    val googleWebClientId = (System.getenv("GOOGLE_WEB_CLIENT_ID") ?: "").replace("\"", "\\\"")
 
     buildConfigField("String", "FIREBASE_API_KEY", "\"$firebaseApiKey\"")
     buildConfigField("String", "FIREBASE_APP_ID", "\"$firebaseAppId\"")
     buildConfigField("String", "FIREBASE_PROJECT_ID", "\"$firebaseProjectId\"")
+    buildConfigField("String", "GOOGLE_WEB_CLIENT_ID", "\"$googleWebClientId\"")
   }
 
   signingConfigs {
