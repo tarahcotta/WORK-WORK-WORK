@@ -822,11 +822,11 @@ fun ActiveLoggerScreen(
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     IconButton(
                                         onClick = { activeFormDemoExercise = logState.exerciseName },
-                                        modifier = Modifier.size(36.dp)
+                                        modifier = Modifier.size(40.dp)
                                     ) {
                                         Icon(
                                             imageVector = Icons.Default.SmartDisplay,
-                                            contentDescription = "Video Demo",
+                                            contentDescription = "Video Demo for $cleanTitle",
                                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                             modifier = Modifier.size(19.dp)
                                         )
@@ -837,22 +837,22 @@ fun ActiveLoggerScreen(
                                             val currentWeight = firstSet?.weightText?.toFloatOrNull() ?: currentPr
                                             smartWarmupDialogTarget = Pair(logState.exerciseName, if (currentWeight > 0f) currentWeight else 95f)
                                         },
-                                        modifier = Modifier.size(36.dp)
+                                        modifier = Modifier.size(40.dp)
                                     ) {
                                         Icon(
                                             imageVector = Icons.Default.FitnessCenter,
-                                            contentDescription = "Warmup & Plates",
+                                            contentDescription = "Warmup and Plates for $cleanTitle",
                                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                             modifier = Modifier.size(19.dp)
                                         )
                                     }
                                     IconButton(
                                         onClick = { swapExerciseDialogTarget = logState.exerciseName },
-                                        modifier = Modifier.size(36.dp)
+                                        modifier = Modifier.size(40.dp)
                                     ) {
                                         Icon(
                                             imageVector = Icons.Default.Refresh,
-                                            contentDescription = "Swap Exercise",
+                                            contentDescription = "Swap $cleanTitle",
                                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                             modifier = Modifier.size(19.dp)
                                         )

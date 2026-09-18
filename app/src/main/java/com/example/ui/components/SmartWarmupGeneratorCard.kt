@@ -20,6 +20,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -136,7 +138,8 @@ fun SmartWarmupDialog(
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onSurface,
                                 maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.semantics { heading() }
                             )
                             Text(
                                 text = exerciseName,
@@ -149,8 +152,17 @@ fun SmartWarmupDialog(
                         }
                     }
 
-                    IconButton(onClick = onDismiss, modifier = Modifier.size(36.dp)) {
-                        Icon(Icons.Default.Close, contentDescription = "Close", tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                    IconButton(
+                        onClick = onDismiss,
+                        modifier = Modifier
+                            .size(44.dp)
+                            .testTag("warmup_dialog_close_button")
+                    ) {
+                        Icon(
+                            Icons.Default.Close,
+                            contentDescription = "Close Smart Warm-Up Ladder",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     }
                 }
 
@@ -208,9 +220,15 @@ fun SmartWarmupDialog(
                                 val current = parsedWeight
                                 targetWeightInput = (current - 5f).coerceAtLeast(45f).toInt().toString()
                             },
-                            modifier = Modifier.size(36.dp)
+                            modifier = Modifier
+                                .size(40.dp)
+                                .testTag("warmup_decrease_weight_button")
                         ) {
-                            Icon(Icons.Default.Remove, contentDescription = "-5 lbs", modifier = Modifier.size(16.dp))
+                            Icon(
+                                Icons.Default.Remove,
+                                contentDescription = "Decrease target weight by 5 pounds",
+                                modifier = Modifier.size(16.dp)
+                            )
                         }
 
                         Surface(
@@ -234,9 +252,15 @@ fun SmartWarmupDialog(
                                 val current = parsedWeight
                                 targetWeightInput = (current + 5f).toInt().toString()
                             },
-                            modifier = Modifier.size(36.dp)
+                            modifier = Modifier
+                                .size(40.dp)
+                                .testTag("warmup_increase_weight_button")
                         ) {
-                            Icon(Icons.Default.Add, contentDescription = "+5 lbs", modifier = Modifier.size(16.dp))
+                            Icon(
+                                Icons.Default.Add,
+                                contentDescription = "Increase target weight by 5 pounds",
+                                modifier = Modifier.size(16.dp)
+                            )
                         }
                     }
                 }
@@ -250,7 +274,9 @@ fun SmartWarmupDialog(
                             shape = RoundedCornerShape(12.dp),
                             color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f),
                             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .semantics(mergeDescendants = true) {}
                         ) {
                             Column(
                                 modifier = Modifier

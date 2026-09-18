@@ -258,13 +258,17 @@ class VitalViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun signInWithGoogle(webClientId: String) {
+    fun signInWithGoogle(context: Context? = null, webClientId: String? = null) {
         viewModelScope.launch {
-            val user = authManager.signInWithGoogle(webClientId)
+            val user = authManager.signInWithGoogle(context, webClientId)
             if (user != null) {
                 repository.restoreUserDataFromCloud(user.uid)
             }
         }
+    }
+
+    fun signInWithGoogle(webClientId: String) {
+        signInWithGoogle(null, webClientId)
     }
 
     fun signOut() {

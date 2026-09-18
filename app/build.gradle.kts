@@ -87,6 +87,7 @@ secrets {
   ignoreList.add("FIREBASE_API_KEY")
   ignoreList.add("FIREBASE_APP_ID")
   ignoreList.add("FIREBASE_PROJECT_ID")
+  ignoreList.add("GOOGLE_WEB_CLIENT_ID")
 }
 
 googleServices { missingGoogleServicesStrategy = MissingGoogleServicesStrategy.WARN }
