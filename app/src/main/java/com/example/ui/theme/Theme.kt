@@ -8,6 +8,7 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 enum class ThemeMode {
@@ -36,7 +37,11 @@ private val DarkColorScheme = darkColorScheme(
     surfaceVariant = GeoSurfaceVariantDark,
     onSurfaceVariant = GeoOnSurfaceVariantDark,
     outline = CarbonBorderDark,
-    outlineVariant = CarbonBorderDark
+    outlineVariant = CarbonBorderDark,
+    error = Color(0xFFFF5449),
+    onError = Color(0xFF690005),
+    errorContainer = Color(0xFF93000A),
+    onErrorContainer = Color(0xFFFFDAD6)
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -58,7 +63,12 @@ private val LightColorScheme = lightColorScheme(
     onSurface = GeoOnSurfaceLight,
     surfaceVariant = GeoSurfaceVariantLight,
     onSurfaceVariant = GeoOnSurfaceVariantLight,
-    outlineVariant = GeoOutlineLight
+    outline = FogEdge,
+    outlineVariant = GeoOutlineLight,
+    error = Color(0xFFBA1A1A),
+    onError = Color(0xFFFFFFFF),
+    errorContainer = Color(0xFFFFDAD6),
+    onErrorContainer = Color(0xFF410002)
 )
 
 @Composable

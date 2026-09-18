@@ -57,6 +57,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.ui.screens.PlateCount
 import com.example.ui.screens.VisualBarbell
+import com.example.ui.theme.PlateTokens
 import com.example.ui.theme.SpaceGrotesk
 import com.example.ui.theme.TelemetryNumeralStyle
 import kotlin.math.max
@@ -78,13 +79,13 @@ fun QuickPlateCalculatorDialog(
 
     val availablePlates = remember {
         listOf(
-            Triple(45.0, "45 lbs", Color(0xFFD32F2F)), // Red
-            Triple(35.0, "35 lbs", Color(0xFFFBC02D)), // Yellow
-            Triple(25.0, "25 lbs", Color(0xFF388E3C)), // Green
-            Triple(10.0, "10 lbs", Color(0xFF1976D2)), // Blue
-            Triple(5.0, "5 lbs", Color(0xFF7B1FA2)),   // Purple
-            Triple(2.5, "2.5 lbs", Color(0xFF616161)), // Gray
-            Triple(1.25, "1.25 lbs", Color(0xFF455A64)) // Micro-plate
+            Triple(45.0, "45 lbs", PlateTokens.PlateRed),
+            Triple(35.0, "35 lbs", PlateTokens.PlateYellow),
+            Triple(25.0, "25 lbs", PlateTokens.PlateGreen),
+            Triple(10.0, "10 lbs", PlateTokens.PlateBlue),
+            Triple(5.0, "5 lbs", PlateTokens.PlatePurple),
+            Triple(2.5, "2.5 lbs", PlateTokens.PlateGray),
+            Triple(1.25, "1.25 lbs", PlateTokens.PlateDarkGray)
         )
     }
 

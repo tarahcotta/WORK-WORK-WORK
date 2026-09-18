@@ -36,6 +36,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.ui.components.CustomFlowRow
+import com.example.ui.theme.PlateTokens
 import com.example.ui.theme.SpaceGrotesk
 import com.example.ui.theme.TelemetryNumeralStyle
 import kotlin.math.max
@@ -116,32 +117,32 @@ fun PlateCalculatorScreen(
     val availablePlates = remember(selectedCategory) {
         when (selectedCategory) {
             EquipmentCategory.OLYMPIC_BARBELL -> listOf(
-                Triple(45.0, "45 lbs", Color(0xFFD32F2F)), // Red
-                Triple(35.0, "35 lbs", Color(0xFFFBC02D)), // Yellow
-                Triple(25.0, "25 lbs", Color(0xFF388E3C)), // Green
-                Triple(10.0, "10 lbs", Color(0xFF1976D2)), // Blue
-                Triple(5.0, "5 lbs", Color(0xFF7B1FA2)),   // Purple
-                Triple(2.5, "2.5 lbs", Color(0xFF616161)), // Gray
-                Triple(1.25, "1.25 lbs", Color(0xFF455A64)) // Dark Gray Micro-plate
+                Triple(45.0, "45 lbs", PlateTokens.PlateRed),
+                Triple(35.0, "35 lbs", PlateTokens.PlateYellow),
+                Triple(25.0, "25 lbs", PlateTokens.PlateGreen),
+                Triple(10.0, "10 lbs", PlateTokens.PlateBlue),
+                Triple(5.0, "5 lbs", PlateTokens.PlatePurple),
+                Triple(2.5, "2.5 lbs", PlateTokens.PlateGray),
+                Triple(1.25, "1.25 lbs", PlateTokens.PlateDarkGray)
             )
             EquipmentCategory.STANDARD_BARBELL -> listOf(
-                Triple(25.0, "25 lbs", Color(0xFF388E3C)),
-                Triple(10.0, "10 lbs", Color(0xFF1976D2)),
-                Triple(5.0, "5 lbs", Color(0xFF7B1FA2)),
-                Triple(2.5, "2.5 lbs", Color(0xFF616161)),
-                Triple(1.25, "1.25 lbs", Color(0xFF455A64))
+                Triple(25.0, "25 lbs", PlateTokens.PlateGreen),
+                Triple(10.0, "10 lbs", PlateTokens.PlateBlue),
+                Triple(5.0, "5 lbs", PlateTokens.PlatePurple),
+                Triple(2.5, "2.5 lbs", PlateTokens.PlateGray),
+                Triple(1.25, "1.25 lbs", PlateTokens.PlateDarkGray)
             )
             EquipmentCategory.DUMBBELLS -> listOf(
-                Triple(10.0, "10 lbs", Color(0xFF1976D2)),
-                Triple(5.0, "5 lbs", Color(0xFF7B1FA2)),
-                Triple(2.5, "2.5 lbs", Color(0xFF616161)),
-                Triple(1.25, "1.25 lbs", Color(0xFF455A64))
+                Triple(10.0, "10 lbs", PlateTokens.PlateBlue),
+                Triple(5.0, "5 lbs", PlateTokens.PlatePurple),
+                Triple(2.5, "2.5 lbs", PlateTokens.PlateGray),
+                Triple(1.25, "1.25 lbs", PlateTokens.PlateDarkGray)
             )
             EquipmentCategory.MACHINE_STACK -> listOf(
-                Triple(20.0, "20 lbs Stack Plate", Color(0xFF1976D2)),
-                Triple(10.0, "10 lbs Stack Plate", Color(0xFF388E3C)),
-                Triple(5.0, "5 lbs Add-on Weight", Color(0xFF7B1FA2)),
-                Triple(2.5, "2.5 lbs Micro-pin", Color(0xFFFBC02D))
+                Triple(20.0, "20 lbs Stack Plate", PlateTokens.PlateBlue),
+                Triple(10.0, "10 lbs Stack Plate", PlateTokens.PlateGreen),
+                Triple(5.0, "5 lbs Add-on Weight", PlateTokens.PlatePurple),
+                Triple(2.5, "2.5 lbs Micro-pin", PlateTokens.PlateYellow)
             )
         }
     }
@@ -464,8 +465,7 @@ fun PlateCalculatorScreen(
                         val countLabel = if (selectedCategory == EquipmentCategory.MACHINE_STACK) "total" else "per side"
                         val perSideContrib = pc.plateWeight * pc.count
                         val totalContrib = if (selectedCategory == EquipmentCategory.MACHINE_STACK) perSideContrib else perSideContrib * 2.0
-                        val isLightColor = pc.color == Color(0xFFFBC02D) || pc.plateWeight == 35.0
-                        val chipTextColor = if (isLightColor) Color(0xFF1B1B1B) else Color.White
+                        val chipTextColor = PlateTokens.textColorForPlate(pc.plateWeight, pc.color)
 
                         Surface(
                             shape = RoundedCornerShape(10.dp),
@@ -713,7 +713,7 @@ fun VisualBarbell(
                 modifier = Modifier
                     .width(60.dp)
                     .height(barHeight)
-                    .background(Color(0xFF37474F), RoundedCornerShape(topStart = 3.dp, bottomStart = 3.dp))
+                    .background(PlateTokens.BarbellShaftDark, RoundedCornerShape(topStart = 3.dp, bottomStart = 3.dp))
             )
 
             // 2. Inner Collar Stop Flange (Thicker disk that stops plates from sliding inward)
@@ -721,8 +721,8 @@ fun VisualBarbell(
                 modifier = Modifier
                     .width(14.dp)
                     .height(38.dp)
-                    .background(Color(0xFF78909C), RoundedCornerShape(2.dp))
-                    .border(1.dp, Color(0xFF37474F).copy(alpha = 0.5f), RoundedCornerShape(2.dp)),
+                    .background(PlateTokens.CollarFlangeSteel, RoundedCornerShape(2.dp))
+                    .border(1.dp, PlateTokens.BarbellShaftDark.copy(alpha = 0.5f), RoundedCornerShape(2.dp)),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
@@ -747,8 +747,8 @@ fun VisualBarbell(
                     modifier = Modifier
                         .width(dynamicSleeveWidth)
                         .height(20.dp)
-                        .background(Color(0xFFB0BEC5), RoundedCornerShape(topEnd = 3.dp, bottomEnd = 3.dp))
-                        .border(1.dp, Color(0xFF78909C), RoundedCornerShape(topEnd = 3.dp, bottomEnd = 3.dp))
+                        .background(PlateTokens.SleeveChrome, RoundedCornerShape(topEnd = 3.dp, bottomEnd = 3.dp))
+                        .border(1.dp, PlateTokens.CollarFlangeSteel, RoundedCornerShape(topEnd = 3.dp, bottomEnd = 3.dp))
                 )
 
                 // Plates stacked from inside collar outward
@@ -776,8 +776,7 @@ fun VisualBarbell(
                                 else -> 10.dp
                             }
 
-                            val isLightPlate = plateCount.plateWeight == 35.0 || plateCount.color == Color(0xFFFBC02D)
-                            val textColor = if (isLightPlate) Color(0xFF1B1B1B) else Color.White
+                            val textColor = PlateTokens.textColorForPlate(plateCount.plateWeight, plateCount.color)
 
                             val labelText = if (plateCount.plateWeight % 1.0 == 0.0) {
                                 "${plateCount.plateWeight.toInt()}"
