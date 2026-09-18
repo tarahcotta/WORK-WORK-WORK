@@ -44,6 +44,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
@@ -51,6 +52,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import kotlinx.coroutines.delay
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -79,16 +81,16 @@ fun PreWorkoutMobilityCard(
     var secondsRemaining by remember { mutableLongStateOf(60L) }
     var isTimerRunning by remember { mutableStateOf(false) }
 
-    DisposableEffect(activeTimerDrillIndex, isTimerRunning) {
-        var timer: CountDownTimer? = null
-        if (isTimerRunning && activeTimerDrillIndex >= 0) {
-            timer = object : CountDownTimer(secondsRemaining * 1000, 1000) {
-                override fun onTick(millisUntilFinished: Long) {
-                    secondsRemaining = millisUntilFinished / 1000
+    // Real-time 1-second cadence countdown timer
+    LaunchedEffect(activeTimerDrillIndex, isTimerRunning) {
+        while (isTimerRunning && activeTimerDrillIndex >= 0 && secondsRemaining > 0) {
+            delay(1000L)
+            if (isTimerRunning && activeTimerDrillIndex >= 0) {
+                if (secondsRemaining > 0) {
+                    secondsRemaining--
                 }
-
-                override fun onFinish() {
-                    secondsRemaining = 0
+                if (secondsRemaining <= 0L) {
+                    secondsRemaining = 0L
                     isTimerRunning = false
                     if (!completedDrills.contains(activeTimerDrillIndex)) {
                         completedDrills.add(activeTimerDrillIndex)
@@ -97,10 +99,7 @@ fun PreWorkoutMobilityCard(
                         onWarmupCompleted()
                     }
                 }
-            }.start()
-        }
-        onDispose {
-            timer?.cancel()
+            }
         }
     }
 

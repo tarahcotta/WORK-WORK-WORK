@@ -277,6 +277,22 @@ fun ActiveLoggerScreen(
     var timerAlertMode by remember { mutableStateOf("Sound + Vibrate") }
     var showTimerSettingsSheet by remember { mutableStateOf(false) }
 
+    // Real-time 1-second cadence countdown timer
+    LaunchedEffect(isTimerRunning) {
+        while (isTimerRunning && timerRemainingSeconds > 0) {
+            kotlinx.coroutines.delay(1000L)
+            if (isTimerRunning) {
+                if (timerRemainingSeconds > 0) {
+                    timerRemainingSeconds -= 1
+                }
+                if (timerRemainingSeconds <= 0) {
+                    timerRemainingSeconds = 0
+                    isTimerRunning = false
+                }
+            }
+        }
+    }
+
     // Multi-modal Rest Timer Feedback (Sound + Vibrate, Vibrate Only, Silent)
     LaunchedEffect(timerRemainingSeconds, isTimerRunning, timerAlertMode) {
         if (isTimerRunning) {
@@ -297,25 +313,6 @@ fun ActiveLoggerScreen(
                     }
                 }
             }
-        }
-    }
-
-    DisposableEffect(isTimerRunning, timerRemainingSeconds) {
-        var timer: CountDownTimer? = null
-        if (isTimerRunning && timerRemainingSeconds > 0) {
-            timer = object : CountDownTimer((timerRemainingSeconds * 1000).toLong(), 1000) {
-                override fun onTick(millisUntilFinished: Long) {
-                    timerRemainingSeconds = (millisUntilFinished / 1000).toInt()
-                }
-
-                override fun onFinish() {
-                    timerRemainingSeconds = 0
-                    isTimerRunning = false
-                }
-            }.start()
-        }
-        onDispose {
-            timer?.cancel()
         }
     }
 

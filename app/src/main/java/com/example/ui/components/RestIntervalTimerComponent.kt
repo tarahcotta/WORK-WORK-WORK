@@ -711,23 +711,21 @@ fun FloatingRestTimerBar(
         isFinished = false
     }
 
-    // Countdown Timer logic
-    DisposableEffect(isRunning, mode, secondsRemaining) {
-        var timer: CountDownTimer? = null
-        if (isRunning && mode == TimerMode.COUNTDOWN && secondsRemaining > 0) {
-            timer = object : CountDownTimer((secondsRemaining * 1000).toLong(), 1000) {
-                override fun onTick(millisUntilFinished: Long) {
-                    secondsRemaining = (millisUntilFinished / 1000).toInt()
+    // Countdown Timer logic - reliable 1-second real-time cadence
+    LaunchedEffect(isRunning, mode) {
+        while (isRunning && mode == TimerMode.COUNTDOWN && secondsRemaining > 0) {
+            delay(1000L)
+            if (isRunning && mode == TimerMode.COUNTDOWN) {
+                if (secondsRemaining > 0) {
+                    secondsRemaining--
                 }
-
-                override fun onFinish() {
+                if (secondsRemaining <= 0) {
                     secondsRemaining = 0
                     isRunning = false
                     isFinished = true
                 }
-            }.start()
+            }
         }
-        onDispose { timer?.cancel() }
     }
 
     // Stopwatch logic
