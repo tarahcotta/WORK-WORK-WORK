@@ -148,6 +148,7 @@ import com.example.ui.components.RpeEffortCalibrationDialog
 import com.example.ui.components.SmartWarmupDialog
 import com.example.ui.components.WarmupSetStep
 import com.example.ui.components.WorkoutExitConfirmationDialog
+import com.example.ui.components.VitalHapticFeedback
 import com.example.ui.theme.TelemetryNumeralStyle
 import com.example.ui.theme.TelemetryTimerStyle
 import com.example.ui.theme.VitalShapes
@@ -298,23 +299,21 @@ fun ActiveLoggerScreen(
     }
 
     // Multi-modal Rest Timer Feedback (Sound + Vibrate, Vibrate Only, Silent)
-    LaunchedEffect(timerRemainingSeconds, isTimerRunning, timerAlertMode) {
-        if (isTimerRunning) {
-            if (timerRemainingSeconds in 1..3) {
-                if (timerAlertMode != "Silent") {
-                    haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                }
-            } else if (timerRemainingSeconds == 0) {
-                if (timerAlertMode != "Silent") {
-                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                }
-                if (timerAlertMode == "Sound + Vibrate") {
-                    try {
-                        val toneGenerator = ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100)
-                        toneGenerator.startTone(ToneGenerator.TONE_PROP_BEEP2, 350)
-                    } catch (e: Exception) {
-                        // Fallback if audio fails
-                    }
+    LaunchedEffect(timerRemainingSeconds) {
+        if (timerRemainingSeconds in 1..3 && isTimerRunning) {
+            if (timerAlertMode != "Silent") {
+                VitalHapticFeedback.timerTick(context, haptic)
+            }
+        } else if (timerRemainingSeconds == 0 && targetRestSeconds > 0) {
+            if (timerAlertMode != "Silent") {
+                VitalHapticFeedback.timerComplete(context, haptic)
+            }
+            if (timerAlertMode == "Sound + Vibrate") {
+                try {
+                    val toneGenerator = ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100)
+                    toneGenerator.startTone(ToneGenerator.TONE_PROP_BEEP2, 350)
+                } catch (e: Exception) {
+                    // Fallback if audio fails
                 }
             }
         }
@@ -334,6 +333,7 @@ fun ActiveLoggerScreen(
     val isFinishEnabled = totalCompletedSets > 0
 
     val executeSaveAndComplete = {
+        VitalHapticFeedback.exerciseComplete(context, haptic)
         val allLoggedSets = mutableListOf<LoggedSetEntity>()
         exerciseLogs.forEach { log ->
             log.sets.forEach { setInput ->
@@ -640,7 +640,7 @@ fun ActiveLoggerScreen(
                                             Surface(
                                                 modifier = Modifier.clickable {
                                                     timerRemainingSeconds = (timerRemainingSeconds + 30)
-                                                    haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                                    VitalHapticFeedback.timerButtonTap(context, haptic)
                                                 },
                                                 shape = RoundedCornerShape(4.dp),
                                                 color = MaterialTheme.colorScheme.surfaceVariant,
@@ -656,7 +656,7 @@ fun ActiveLoggerScreen(
                                             IconButton(
                                                 onClick = {
                                                     isTimerRunning = !isTimerRunning
-                                                    haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                                    VitalHapticFeedback.timerButtonTap(context, haptic)
                                                 },
                                                 modifier = Modifier.size(32.dp)
                                             ) {
@@ -671,7 +671,7 @@ fun ActiveLoggerScreen(
                                                 onClick = {
                                                     timerRemainingSeconds = 0
                                                     isTimerRunning = false
-                                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                                    VitalHapticFeedback.timerButtonTap(context, haptic)
                                                 },
                                                 modifier = Modifier.size(32.dp)
                                             ) {
@@ -1023,8 +1023,8 @@ fun ActiveLoggerScreen(
                                             // Complete Set Button
                                             IconButton(
                                                 onClick = {
-                                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                                     if (!setInput.isCompleted) {
+                                                        VitalHapticFeedback.exerciseComplete(context, haptic)
                                                         setInput.isCompleted = true
                                                         logState.sets.forEachIndexed { i, s ->
                                                             if (i > setIndex && !s.isCompleted) {
@@ -1050,6 +1050,7 @@ fun ActiveLoggerScreen(
                                                             }
                                                         }
                                                     } else {
+                                                        VitalHapticFeedback.exerciseUnmarked(context, haptic)
                                                         setInput.isCompleted = false
                                                     }
                                                 },
@@ -1515,15 +1516,21 @@ fun ActiveLoggerScreen(
                     remainingSeconds = timerRemainingSeconds,
                     alertMode = timerAlertMode,
                     onAlertModeChange = { timerAlertMode = it },
-                    onTogglePlayPause = { isTimerRunning = !isTimerRunning },
+                    onTogglePlayPause = {
+                        VitalHapticFeedback.timerButtonTap(context, haptic)
+                        isTimerRunning = !isTimerRunning
+                    },
                     onResetTimer = { newTarget ->
+                        VitalHapticFeedback.timerButtonTap(context, haptic)
                         timerRemainingSeconds = newTarget
                         isTimerRunning = true
                     },
                     onAdjustSeconds = { delta ->
+                        VitalHapticFeedback.timerButtonTap(context, haptic)
                         timerRemainingSeconds = (timerRemainingSeconds + delta).coerceAtLeast(0)
                     },
                     onPresetSelected = { seconds ->
+                        VitalHapticFeedback.timerButtonTap(context, haptic)
                         targetRestSeconds = seconds
                         timerRemainingSeconds = seconds
                         isTimerRunning = true

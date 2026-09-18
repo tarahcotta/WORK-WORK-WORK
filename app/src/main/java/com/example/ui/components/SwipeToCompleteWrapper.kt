@@ -30,10 +30,13 @@ fun SwipeToCompleteWrapper(
     onComplete: () -> Unit,
     content: @Composable () -> Unit
 ) {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val haptic = androidx.compose.ui.platform.LocalHapticFeedback.current
     val dismissState = rememberSwipeToDismissBoxState(
         initialValue = SwipeToDismissBoxValue.Settled,
         confirmValueChange = {
             if (it == SwipeToDismissBoxValue.StartToEnd || it == SwipeToDismissBoxValue.EndToStart) {
+                VitalHapticFeedback.exerciseComplete(context, haptic)
                 onComplete()
                 true
             } else {

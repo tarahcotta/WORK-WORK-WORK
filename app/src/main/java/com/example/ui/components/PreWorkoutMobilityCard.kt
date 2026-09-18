@@ -80,6 +80,8 @@ fun PreWorkoutMobilityCard(
     var activeTimerDrillIndex by remember { mutableIntStateOf(-1) }
     var secondsRemaining by remember { mutableLongStateOf(60L) }
     var isTimerRunning by remember { mutableStateOf(false) }
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val haptic = androidx.compose.ui.platform.LocalHapticFeedback.current
 
     // Real-time 1-second cadence countdown timer
     LaunchedEffect(activeTimerDrillIndex, isTimerRunning) {
@@ -88,10 +90,14 @@ fun PreWorkoutMobilityCard(
             if (isTimerRunning && activeTimerDrillIndex >= 0) {
                 if (secondsRemaining > 0) {
                     secondsRemaining--
+                    if (secondsRemaining in 1..3) {
+                        VitalHapticFeedback.timerTick(context, haptic)
+                    }
                 }
                 if (secondsRemaining <= 0L) {
                     secondsRemaining = 0L
                     isTimerRunning = false
+                    VitalHapticFeedback.timerComplete(context, haptic)
                     if (!completedDrills.contains(activeTimerDrillIndex)) {
                         completedDrills.add(activeTimerDrillIndex)
                     }
@@ -299,9 +305,13 @@ fun PreWorkoutMobilityCard(
                                 .fillMaxWidth()
                                 .padding(vertical = 6.dp)
                                 .clickable {
-                                    if (isDone) completedDrills.remove(index) else completedDrills.add(
-                                        index
-                                    )
+                                    if (isDone) {
+                                        completedDrills.remove(index)
+                                        VitalHapticFeedback.exerciseUnmarked(context, haptic)
+                                    } else {
+                                        completedDrills.add(index)
+                                        VitalHapticFeedback.exerciseComplete(context, haptic)
+                                    }
                                     if (completedDrills.size == drills.size) onWarmupCompleted()
                                 },
                             shape = RoundedCornerShape(16.dp),
@@ -365,6 +375,7 @@ fun PreWorkoutMobilityCard(
                                         color = if (isCurrentTimer && isTimerRunning) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface,
                                         border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)),
                                         modifier = Modifier.clickable {
+                                            VitalHapticFeedback.timerButtonTap(context, haptic)
                                             if (isCurrentTimer && isTimerRunning) {
                                                 isTimerRunning = false
                                             } else {

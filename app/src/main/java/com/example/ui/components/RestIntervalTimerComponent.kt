@@ -115,10 +115,11 @@ fun RestIntervalTimerModalSheetContent(
 ) {
     val isFinished = remainingSeconds == 0 && targetRestSeconds > 0
     val haptic = LocalHapticFeedback.current
+    val context = androidx.compose.ui.platform.LocalContext.current
 
     LaunchedEffect(isFinished) {
         if (isFinished) {
-            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+            VitalHapticFeedback.timerComplete(context, haptic)
         }
     }
 
@@ -336,7 +337,7 @@ fun RestIntervalTimerModalSheetContent(
                             .size(66.dp)
                             .clip(CircleShape)
                             .clickable {
-                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                VitalHapticFeedback.timerButtonTap(context, haptic)
                                 onTogglePlayPause()
                             }
                             .testTag("interval_timer_play_pause_button"),
@@ -360,7 +361,7 @@ fun RestIntervalTimerModalSheetContent(
                             .size(48.dp)
                             .clip(CircleShape)
                             .clickable {
-                                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                VitalHapticFeedback.timerButtonTap(context, haptic)
                                 onAdjustSeconds(15)
                             }
                             .testTag("interval_timer_plus_15"),
@@ -385,7 +386,7 @@ fun RestIntervalTimerModalSheetContent(
                             .size(44.dp)
                             .clip(CircleShape)
                             .clickable {
-                                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                VitalHapticFeedback.timerButtonTap(context, haptic)
                                 onResetTimer(targetRestSeconds)
                             }
                             .testTag("interval_timer_reset_button"),
@@ -461,7 +462,7 @@ fun RestIntervalTimerModalSheetContent(
                         modifier = Modifier
                             .weight(1f)
                             .clickable {
-                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                VitalHapticFeedback.timerButtonTap(context, haptic)
                                 onPresetSelected(seconds)
                             }
                             .testTag("interval_preset_$seconds"),
@@ -539,7 +540,7 @@ fun RestIntervalTimerModalSheetContent(
                     modifier = Modifier
                         .weight(1f)
                         .clickable {
-                            haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                            VitalHapticFeedback.timerButtonTap(context, haptic)
                             onAlertModeChange(modeName)
                         },
                     shape = RoundedCornerShape(12.dp),
@@ -701,6 +702,8 @@ fun FloatingRestTimerBar(
     var stopwatchElapsedSeconds by remember { mutableIntStateOf(0) }
     var isRunning by remember { mutableStateOf(true) }
     var isFinished by remember { mutableStateOf(false) }
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val haptic = androidx.compose.ui.platform.LocalHapticFeedback.current
 
     // Reset when a new initialSeconds or exercise arrives
     LaunchedEffect(initialSeconds, exerciseName) {
@@ -718,11 +721,15 @@ fun FloatingRestTimerBar(
             if (isRunning && mode == TimerMode.COUNTDOWN) {
                 if (secondsRemaining > 0) {
                     secondsRemaining--
+                    if (secondsRemaining in 1..3) {
+                        VitalHapticFeedback.timerTick(context, haptic)
+                    }
                 }
                 if (secondsRemaining <= 0) {
                     secondsRemaining = 0
                     isRunning = false
                     isFinished = true
+                    VitalHapticFeedback.timerComplete(context, haptic)
                 }
             }
         }
@@ -838,6 +845,7 @@ fun FloatingRestTimerBar(
                             shape = CircleShape,
                             color = MaterialTheme.colorScheme.primaryContainer,
                             modifier = Modifier.clickable {
+                                VitalHapticFeedback.timerButtonTap(context, haptic)
                                 isRunning = !isRunning
                                 if (isFinished) isFinished = false
                             }
@@ -856,6 +864,7 @@ fun FloatingRestTimerBar(
 
                         // Reset
                         IconButton(onClick = {
+                            VitalHapticFeedback.timerButtonTap(context, haptic)
                             secondsRemaining = totalTargetSeconds
                             stopwatchElapsedSeconds = 0
                             isFinished = false
@@ -877,6 +886,7 @@ fun FloatingRestTimerBar(
                                 shape = RoundedCornerShape(8.dp),
                                 color = MaterialTheme.colorScheme.surfaceVariant,
                                 modifier = Modifier.clickable {
+                                    VitalHapticFeedback.timerButtonTap(context, haptic)
                                     secondsRemaining = (secondsRemaining - 15).coerceAtLeast(0)
                                 }
                             ) {
@@ -892,6 +902,7 @@ fun FloatingRestTimerBar(
                                 shape = RoundedCornerShape(8.dp),
                                 color = MaterialTheme.colorScheme.secondaryContainer,
                                 modifier = Modifier.clickable {
+                                    VitalHapticFeedback.timerButtonTap(context, haptic)
                                     secondsRemaining += 15
                                     isFinished = false
                                 }
@@ -923,6 +934,7 @@ fun FloatingRestTimerBar(
                                 shape = RoundedCornerShape(6.dp),
                                 color = if (isSel) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f),
                                 modifier = Modifier.clickable {
+                                    VitalHapticFeedback.timerButtonTap(context, haptic)
                                     mode = TimerMode.COUNTDOWN
                                     totalTargetSeconds = preset
                                     secondsRemaining = preset
@@ -945,6 +957,7 @@ fun FloatingRestTimerBar(
                     // Mode Switcher
                     TextButton(
                         onClick = {
+                            VitalHapticFeedback.timerButtonTap(context, haptic)
                             mode = if (mode == TimerMode.COUNTDOWN) TimerMode.STOPWATCH else TimerMode.COUNTDOWN
                             isRunning = true
                         }

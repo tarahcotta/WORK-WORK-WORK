@@ -105,6 +105,7 @@ fun AnimatedSetCompletionButton(
     testTag: String = "animated_set_completion_btn"
 ) {
     val haptic = LocalHapticFeedback.current
+    val context = androidx.compose.ui.platform.LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     
     // Scale animation on tap
@@ -151,7 +152,11 @@ fun AnimatedSetCompletionButton(
                 .scale(scaleAnim.value)
                 .clip(RoundedCornerShape(12.dp))
                 .clickable {
-                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                    if (!isCompleted) {
+                        VitalHapticFeedback.exerciseComplete(context, haptic)
+                    } else {
+                        VitalHapticFeedback.exerciseUnmarked(context, haptic)
+                    }
                     coroutineScope.launch {
                         if (!isCompleted) {
                             // Trigger spring pop and burst
