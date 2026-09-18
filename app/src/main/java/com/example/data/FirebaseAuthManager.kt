@@ -275,7 +275,7 @@ class FirebaseAuthManager(private val context: Context) {
                 _currentUser.value = authResult.user
                 authResult.user
             } else {
-                _authError.value = "Invalid credential type received"
+                _authError.value = "Invalid credential type received: ${credential::class.java.simpleName}"
                 null
             }
         } catch (e: GetCredentialException) {
@@ -284,12 +284,28 @@ class FirebaseAuthManager(private val context: Context) {
                 msg.contains("16", ignoreCase = true) || msg.contains("cancel", ignoreCase = true) ->
                     "Google Sign-In was canceled."
                 msg.contains("no credential", ignoreCase = true) || msg.contains("NoCredentialException", ignoreCase = true) ->
-                    "No Google account selected. Please make sure you are signed into a Google account on this device."
-                else -> "Google Sign-In: ${e.localizedMessage}"
+                    "No Google account selected. Please make sure you are signed into Google on this device or emulator."
+                else -> "Google Sign-In: $msg"
+            }
+            null
+        } catch (e: com.google.firebase.auth.FirebaseAuthException) {
+            val errorCode = e.errorCode
+            val msg = e.localizedMessage ?: ""
+            _authError.value = when {
+                errorCode.contains("INVALID_CREDENTIAL", ignoreCase = true) || msg.contains("invalid credential", ignoreCase = true) ->
+                    "Google Sign-In credential rejected by Firebase. Please verify that: \n1. 'Google' is enabled under Firebase Console > Authentication > Sign-in method.\n2. In Firebase Console > Project Settings, your debug SHA-1 (94:DA:E6:E0:30:FD:8C:02:0B:D4:CC:8B:9B:02:DE:45:1D:3D:4C:D1) is added under Android App certificates."
+                errorCode.contains("OPERATION_NOT_ALLOWED", ignoreCase = true) ->
+                    "Google Sign-in provider is disabled in Firebase Console. Please enable it in Authentication > Sign-in method."
+                else -> "Firebase Auth Error ($errorCode): $msg"
             }
             null
         } catch (e: Exception) {
-            _authError.value = e.localizedMessage ?: "Google Sign-In failed"
+            val msg = e.localizedMessage ?: ""
+            _authError.value = when {
+                msg.contains("invalid credential", ignoreCase = true) ->
+                    "Google Sign-In credential rejected by Firebase. Please verify that: \n1. 'Google' is enabled under Firebase Console > Authentication > Sign-in method.\n2. In Firebase Console > Project Settings, your debug SHA-1 (94:DA:E6:E0:30:FD:8C:02:0B:D4:CC:8B:9B:02:DE:45:1D:3D:4C:D1) is added under Android App certificates."
+                else -> "Google Sign-In failed: $msg"
+            }
             null
         } finally {
             _isLoading.value = false

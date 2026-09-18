@@ -451,7 +451,39 @@ fun AuthDialog(
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Text(
-                                text = "3. Place google-services.json in the app/ folder (or set FIREBASE_API_KEY, FIREBASE_APP_ID & GOOGLE_WEB_CLIENT_ID in Secrets).",
+                                text = "3. In Project Settings > Your apps > Android app, add this debug SHA-1 fingerprint:",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                SelectionContainer {
+                                    Text(
+                                        text = "94:DA:E6:E0:30:FD:8C:02:0B:D4:CC:8B:9B:02:DE:45:1D:3D:4C:D1",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.primary
+                                    )
+                                }
+                                IconButton(
+                                    onClick = {
+                                        clipboardManager.setText(AnnotatedString("94:DA:E6:E0:30:FD:8C:02:0B:D4:CC:8B:9B:02:DE:45:1D:3D:4C:D1"))
+                                    },
+                                    modifier = Modifier.size(32.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.ContentCopy,
+                                        contentDescription = "Copy SHA-1",
+                                        modifier = Modifier.size(16.dp),
+                                        tint = MaterialTheme.colorScheme.primary
+                                    )
+                                }
+                            }
+                            Text(
+                                text = "4. Place google-services.json in the app/ folder (or set FIREBASE_API_KEY, FIREBASE_APP_ID & GOOGLE_WEB_CLIENT_ID in Secrets).",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -655,8 +687,41 @@ fun AuthDialog(
                                     text = displayError,
                                     color = MaterialTheme.colorScheme.onErrorContainer,
                                     style = MaterialTheme.typography.bodySmall,
-                                    lineHeight = 18.sp
+                                    lineHeight = 18.sp,
+                                    modifier = Modifier.weight(1f, fill = false)
                                 )
+                            }
+                            if (displayError.contains("SHA-1") || displayError.contains("rejected by Firebase") || displayError.contains("fingerprint")) {
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    OutlinedButton(
+                                        onClick = {
+                                            clipboardManager.setText(AnnotatedString("94:DA:E6:E0:30:FD:8C:02:0B:D4:CC:8B:9B:02:DE:45:1D:3D:4C:D1"))
+                                        },
+                                        modifier = Modifier.weight(1f),
+                                        shape = RoundedCornerShape(8.dp),
+                                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
+                                    ) {
+                                        Icon(Icons.Default.ContentCopy, contentDescription = null, modifier = Modifier.size(14.dp))
+                                        Spacer(modifier = Modifier.width(4.dp))
+                                        Text("Copy SHA-1", style = MaterialTheme.typography.labelSmall)
+                                    }
+                                    OutlinedButton(
+                                        onClick = {
+                                            clipboardManager.setText(AnnotatedString("CA:EA:3F:29:5B:5D:85:78:D1:5C:46:0E:BB:28:5B:1E:62:39:F4:44:2E:38:27:74:89:18:7C:5C:32:13:CB:30"))
+                                        },
+                                        modifier = Modifier.weight(1f),
+                                        shape = RoundedCornerShape(8.dp),
+                                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
+                                    ) {
+                                        Icon(Icons.Default.ContentCopy, contentDescription = null, modifier = Modifier.size(14.dp))
+                                        Spacer(modifier = Modifier.width(4.dp))
+                                        Text("Copy SHA-256", style = MaterialTheme.typography.labelSmall)
+                                    }
+                                }
                             }
                         }
                     }
