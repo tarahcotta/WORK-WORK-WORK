@@ -1,8 +1,12 @@
 package com.example
 
 import android.content.Context
+import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.test.core.app.ApplicationProvider
+import com.example.ui.components.VitalHapticFeedback
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -12,6 +16,9 @@ import org.robolectric.annotation.Config
 @Config(sdk = [34])
 class ExampleRobolectricTest {
 
+  @get:Rule
+  val composeTestRule = createAndroidComposeRule<MainActivity>()
+
   @Test
   fun `read string from context`() {
     val context = ApplicationProvider.getApplicationContext<Context>()
@@ -20,9 +27,20 @@ class ExampleRobolectricTest {
   }
 
   @Test
-  fun `test MainActivity launches`() {
-    val controller = org.robolectric.Robolectric.buildActivity(MainActivity::class.java).setup()
-    val activity = controller.get()
-    org.junit.Assert.assertNotNull(activity)
+  fun `test MainActivity launches and renders compose`() {
+    composeTestRule.waitForIdle()
+    val activity = composeTestRule.activity
+    assertNotNull(activity)
+  }
+
+  @Test
+  fun `test VitalHapticFeedback all methods execute without throwing`() {
+    val context = composeTestRule.activity
+    VitalHapticFeedback.timerButtonTap(context)
+    VitalHapticFeedback.timerTick(context)
+    VitalHapticFeedback.timerComplete(context)
+    VitalHapticFeedback.exerciseComplete(context)
+    VitalHapticFeedback.exerciseUnmarked(context)
   }
 }
+

@@ -187,17 +187,21 @@ fun ActiveLoggerScreen(
     val context = LocalContext.current
 
     val isReducedMotion = remember(context) {
-        val animScale = Settings.Global.getFloat(
-            context.contentResolver,
-            Settings.Global.ANIMATOR_DURATION_SCALE,
-            1.0f
-        )
-        val transScale = Settings.Global.getFloat(
-            context.contentResolver,
-            Settings.Global.TRANSITION_ANIMATION_SCALE,
-            1.0f
-        )
-        animScale == 0f || transScale == 0f
+        try {
+            val animScale = Settings.Global.getFloat(
+                context.contentResolver,
+                Settings.Global.ANIMATOR_DURATION_SCALE,
+                1.0f
+            )
+            val transScale = Settings.Global.getFloat(
+                context.contentResolver,
+                Settings.Global.TRANSITION_ANIMATION_SCALE,
+                1.0f
+            )
+            animScale == 0f || transScale == 0f
+        } catch (_: Throwable) {
+            false
+        }
     }
 
     var activeDictationCallback by remember { mutableStateOf<((String) -> Unit)?>(null) }
@@ -312,8 +316,17 @@ fun ActiveLoggerScreen(
                 try {
                     val toneGenerator = ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100)
                     toneGenerator.startTone(ToneGenerator.TONE_PROP_BEEP2, 350)
-                } catch (e: Exception) {
-                    // Fallback if audio fails
+                    // Release tone generator after beep duration to prevent native audio track leaks
+                    coroutineScope.launch {
+                        kotlinx.coroutines.delay(400L)
+                        try {
+                            toneGenerator.release()
+                        } catch (_: Throwable) {
+                            // Ignored
+                        }
+                    }
+                } catch (_: Throwable) {
+                    // Fallback if audio fails or cannot be initialized
                 }
             }
         }
