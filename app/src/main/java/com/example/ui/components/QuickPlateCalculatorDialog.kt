@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -347,10 +346,10 @@ fun QuickPlateCalculatorDialog(
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         } else {
-                            FlowRow(
+                            CustomFlowRow(
                                 modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                verticalArrangement = Arrangement.spacedBy(6.dp)
+                                horizontalSpacing = 8.dp,
+                                verticalSpacing = 6.dp
                             ) {
                                 plateBreakdown.forEach { p ->
                                     val isLightBadge = p.color == PlateTokens.PlateYellow || p.plateWeight == 35.0

@@ -380,7 +380,12 @@ fun DashboardScreen(
                             color = MaterialTheme.colorScheme.primary,
                             letterSpacing = 1.sp
                         )
-                        val displayTitle = if (nextRoutineTitle.contains("Heavy Axial Load")) "Day 1: Heavy Axial Load" else nextRoutineTitle
+                        val displayTitle = when {
+                            nextRoutineTitle.contains("Heavy Axial Load", ignoreCase = true) || nextRoutineTitle.contains("Axial Loading", ignoreCase = true) -> "Day 1: Spine & Hip Strength"
+                            nextRoutineTitle.contains("Posterior Chain", ignoreCase = true) -> "Day 2: Hips, Hamstrings & Mobility"
+                            nextRoutineTitle.contains("Unilateral", ignoreCase = true) || nextRoutineTitle.contains("Balance", ignoreCase = true) -> "Day 3: Balance, Stability & Carries"
+                            else -> nextRoutineTitle
+                        }
                         Text(
                             text = displayTitle,
                             style = MaterialTheme.typography.titleLarge,
@@ -445,25 +450,6 @@ fun DashboardScreen(
         }
 
         Spacer(modifier = Modifier.height(16.dp))
-
-        // Demoted Local Persistence & Cloud Sync Card (Clean secondary status)
-        if (viewModel != null) {
-            var showConflictDialog by remember { mutableStateOf(false) }
-            if (showConflictDialog) {
-                com.example.ui.components.SyncConflictDialog(
-                    onKeepLocal = { showConflictDialog = false },
-                    onKeepCloud = { showConflictDialog = false },
-                    onDismiss = { showConflictDialog = false }
-                )
-            }
-            Box(modifier = Modifier.clickable { if (viewModel.userProfile.value != null) showConflictDialog = true }) {
-                AuthSyncCard(
-                    viewModel = viewModel,
-                    onOpenAuthDialog = onOpenAuthDialog
-                )
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-        }
 
         // 2x2 Key Metric Grid (With Clickable Clinical Guidance)
         Surface(
@@ -544,6 +530,27 @@ fun DashboardScreen(
                     )
                 }
             }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Demoted Local Persistence & Cloud Sync Card (Secondary placement to reduce top-of-screen distraction)
+        if (viewModel != null) {
+            var showConflictDialog by remember { mutableStateOf(false) }
+            if (showConflictDialog) {
+                com.example.ui.components.SyncConflictDialog(
+                    onKeepLocal = { showConflictDialog = false },
+                    onKeepCloud = { showConflictDialog = false },
+                    onDismiss = { showConflictDialog = false }
+                )
+            }
+            Box(modifier = Modifier.clickable { if (viewModel.userProfile.value != null) showConflictDialog = true }) {
+                AuthSyncCard(
+                    viewModel = viewModel,
+                    onOpenAuthDialog = onOpenAuthDialog
+                )
+            }
+            Spacer(modifier = Modifier.height(16.dp))
         }
 
 

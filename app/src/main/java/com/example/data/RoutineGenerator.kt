@@ -56,8 +56,8 @@ object RoutineGenerator {
     ): Pair<WorkoutRoutineEntity, List<WorkoutExerciseEntity>> {
         val routine = WorkoutRoutineEntity(
             title = "Longevity Strength Split",
-            dayName = "Day 1: Heavy Axial Loading & Posture Focus",
-            focusSummary = "Axial skeletal strain for bone density, upper back retraction, core bracing."
+            dayName = "Day 1: Spine & Hip Strength + Posture",
+            focusSummary = "Strengthens bone density in your spine and hips, supports upright posture, and stabilizes your core."
         )
 
         val exercises = mutableListOf<WorkoutExerciseEntity>()
@@ -115,8 +115,8 @@ object RoutineGenerator {
     ): Pair<WorkoutRoutineEntity, List<WorkoutExerciseEntity>> {
         val routine = WorkoutRoutineEntity(
             title = "Longevity Strength Split",
-            dayName = "Day 2: Posterior Chain Hinge & Functional Mobility",
-            focusSummary = "Femoral head bone loading via hip hinge, grip, pelvic stability, anti-rotation core."
+            dayName = "Day 2: Hips, Hamstrings & Mobility",
+            focusSummary = "Builds hip and lower back bone strength, grip endurance, and core balance."
         )
 
         val exercises = mutableListOf<WorkoutExerciseEntity>()
@@ -154,21 +154,21 @@ object RoutineGenerator {
 
     private fun create3Day1(equipment: String, knee: Boolean, back: Boolean, shoulder: Boolean, restMult: Float, intensity: String): Pair<WorkoutRoutineEntity, List<WorkoutExerciseEntity>> {
         val (r, e) = createFullBodyA(equipment, knee, back, shoulder, restMult, intensity)
-        val updatedR = r.copy(dayName = "Day 1: Heavy Axial Load & Push Strength", focusSummary = "Squat pattern bone loading, overhead/horizontal push, postural stability.")
+        val updatedR = r.copy(dayName = "Day 1: Spine & Hip Strength + Push", focusSummary = "Squat foundation for bone strength, upper body pushing, and posture support.")
         return Pair(updatedR, e)
     }
 
     private fun create3Day2(equipment: String, knee: Boolean, back: Boolean, shoulder: Boolean, restMult: Float, intensity: String): Pair<WorkoutRoutineEntity, List<WorkoutExerciseEntity>> {
         val (r, e) = createFullBodyB(equipment, knee, back, shoulder, restMult, intensity)
-        val updatedR = r.copy(dayName = "Day 2: Hinge, Grip & Posterior Chain", focusSummary = "Hip hinge femoral loading, upper back pulling, grip strength, glute drive.")
+        val updatedR = r.copy(dayName = "Day 2: Hips, Grip & Lower Back", focusSummary = "Hip hinge movements to build hip bone density, upper back posture, and strong grip.")
         return Pair(updatedR, e)
     }
 
     private fun create3Day3(equipment: String, knee: Boolean, back: Boolean, shoulder: Boolean, restMult: Float, intensity: String): Pair<WorkoutRoutineEntity, List<WorkoutExerciseEntity>> {
         val routine = WorkoutRoutineEntity(
             title = "Longevity Strength Split",
-            dayName = "Day 3: Balance, Unilateral Capacity & Longevity Carries",
-            focusSummary = "Single-leg proprioception, multi-planar core, heavy carries for grip & bone density."
+            dayName = "Day 3: Balance, Stability & Loaded Carries",
+            focusSummary = "Single-leg balance to prevent falls, core stability, and functional carries for grip and vitality."
         )
 
         val exercises = mutableListOf(

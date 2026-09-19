@@ -28,7 +28,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -903,10 +902,10 @@ fun ActiveLoggerScreen(
                             Spacer(modifier = Modifier.height(VitalSpacing.xs))
 
                             // Secondary Row: GoalBadge, PR Badge, and altName in adaptive FlowRow to prevent right-side overcrowding
-                            FlowRow(
+                            CustomFlowRow(
                                 modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(VitalSpacing.sm),
-                                verticalArrangement = Arrangement.spacedBy(VitalSpacing.xs)
+                                horizontalSpacing = VitalSpacing.sm,
+                                verticalSpacing = VitalSpacing.xs
                             ) {
                                 GoalBadge(
                                     goal = logState.primaryGoal
@@ -1054,13 +1053,21 @@ fun ActiveLoggerScreen(
                                                         val currentWeight = setInput.weightText.toFloatOrNull() ?: 0f
                                                         val currentReps = setInput.repsText.toIntOrNull() ?: 0
                                                         val setVolume = (currentWeight * currentReps).toInt()
-                                                        if (setVolume > 0) {
-                                                            coroutineScope.launch {
-                                                                snackbarHostState.showSnackbar(
-                                                                    message = "Set ${setInput.setNumber} logged • $setVolume lbs stimulus",
-                                                                    duration = androidx.compose.material3.SnackbarDuration.Short
-                                                                )
+
+                                                        // Propagate weight & reps forward to next uncompleted sets so user doesn't have to re-type
+                                                        for (nextIdx in (setIndex + 1) until logState.sets.size) {
+                                                            val nextSet = logState.sets[nextIdx]
+                                                            if (!nextSet.isCompleted) {
+                                                                nextSet.weightText = setInput.weightText
+                                                                nextSet.repsText = setInput.repsText
                                                             }
+                                                        }
+
+                                                        coroutineScope.launch {
+                                                            snackbarHostState.showSnackbar(
+                                                                message = "Set ${setInput.setNumber} completed! Great work.",
+                                                                duration = androidx.compose.material3.SnackbarDuration.Short
+                                                            )
                                                         }
                                                     } else {
                                                         VitalHapticFeedback.exerciseUnmarked(context, haptic)
@@ -1128,12 +1135,41 @@ fun ActiveLoggerScreen(
                                     ) {
                                         // Weight Input Field
                                         Column(modifier = Modifier.weight(1f)) {
-                                            Text(
-                                                text = "Weight (lbs)",
-                                                style = MaterialTheme.typography.labelSmall,
-                                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                                fontWeight = FontWeight.Medium
-                                            )
+                                            Row(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                horizontalArrangement = Arrangement.SpaceBetween,
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                Text(
+                                                    text = "Weight (lbs)",
+                                                    style = MaterialTheme.typography.labelSmall,
+                                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                    fontWeight = FontWeight.Medium
+                                                )
+                                                // Direct In-Line Plate Calculator helper button
+                                                Row(
+                                                    verticalAlignment = Alignment.CenterVertically,
+                                                    modifier = Modifier
+                                                        .clickable {
+                                                            quickPlateCalcTarget = Pair(logState.exerciseName, setInput)
+                                                        }
+                                                        .padding(horizontal = 4.dp, vertical = 2.dp)
+                                                ) {
+                                                    Icon(
+                                                        imageVector = Icons.Default.FitnessCenter,
+                                                        contentDescription = "Quick Plate Calculator",
+                                                        tint = MaterialTheme.colorScheme.primary,
+                                                        modifier = Modifier.size(13.dp)
+                                                    )
+                                                    Spacer(modifier = Modifier.width(3.dp))
+                                                    Text(
+                                                        text = "Plates",
+                                                        style = MaterialTheme.typography.labelSmall,
+                                                        color = MaterialTheme.colorScheme.primary,
+                                                        fontWeight = FontWeight.Bold
+                                                    )
+                                                }
+                                            }
                                             Spacer(modifier = Modifier.height(2.dp))
                                             CompactGymStepper(
                                                 valueText = setInput.weightText,
@@ -1146,12 +1182,27 @@ fun ActiveLoggerScreen(
 
                                         // Reps Input Field
                                         Column(modifier = Modifier.weight(1f)) {
-                                            Text(
-                                                text = "Reps",
-                                                style = MaterialTheme.typography.labelSmall,
-                                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                                fontWeight = FontWeight.Medium
-                                            )
+                                            Row(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                horizontalArrangement = Arrangement.SpaceBetween,
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                Text(
+                                                    text = "Reps",
+                                                    style = MaterialTheme.typography.labelSmall,
+                                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                    fontWeight = FontWeight.Medium
+                                                )
+                                                val pb = personalBests[logState.exerciseName]
+                                                if (pb != null && pb > 0f) {
+                                                    Text(
+                                                        text = "Best: ${pb.toInt()} lbs",
+                                                        style = MaterialTheme.typography.labelSmall,
+                                                        color = MaterialTheme.colorScheme.secondary,
+                                                        fontWeight = FontWeight.Bold
+                                                    )
+                                                }
+                                            }
                                             Spacer(modifier = Modifier.height(2.dp))
                                             CompactGymStepper(
                                                 valueText = setInput.repsText,
@@ -1165,7 +1216,33 @@ fun ActiveLoggerScreen(
 
                                     Spacer(modifier = Modifier.height(10.dp))
 
-                                    Spacer(modifier = Modifier.height(8.dp))
+                                    // Descriptive Header for Joint Comfort & Intensity (Plain-Language Usability)
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth().padding(horizontal = 2.dp, vertical = 2.dp),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = "Joint Comfort",
+                                            style = MaterialTheme.typography.labelSmall,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                            fontWeight = FontWeight.Medium
+                                        )
+                                        val rpeDesc = when (setInput.rpe) {
+                                            6 -> "Light (4+ in reserve)"
+                                            7 -> "Moderate (3 in reserve)"
+                                            8 -> "Challenging (2 in reserve)"
+                                            9 -> "Hard (1 in reserve)"
+                                            10 -> "Max Effort"
+                                            else -> "Effort ${setInput.rpe}/10"
+                                        }
+                                        Text(
+                                            text = "Effort: $rpeDesc",
+                                            style = MaterialTheme.typography.labelSmall,
+                                            color = MaterialTheme.colorScheme.primary,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    }
 
                                     // Compact Secondary Metadata Row (Joint Feel & RPE / RIR)
                                     Row(

@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
+import com.example.ui.components.CustomFlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -542,11 +542,10 @@ fun RoutineTableScreen(
                                         Spacer(modifier = Modifier.height(VitalSpacing.md))
 
                                         // Metric Parameter Chips Row (Sets, Reps, RPE, Rest)
-                                        @OptIn(ExperimentalLayoutApi::class)
-                                        FlowRow(
+                                        CustomFlowRow(
                                             modifier = Modifier.fillMaxWidth(),
-                                            horizontalArrangement = Arrangement.spacedBy(VitalSpacing.sm),
-                                            verticalArrangement = Arrangement.spacedBy(VitalSpacing.xs)
+                                            horizontalSpacing = VitalSpacing.sm,
+                                            verticalSpacing = VitalSpacing.xs
                                         ) {
                                             // Sets & Reps
                                             Surface(

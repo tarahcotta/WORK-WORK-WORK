@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
+import com.example.ui.components.CustomFlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -178,10 +178,9 @@ fun HomeScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                @OptIn(ExperimentalLayoutApi::class)
-                FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                CustomFlowRow(
+                    horizontalSpacing = 8.dp,
+                    verticalSpacing = 6.dp
                 ) {
                     Surface(
                         shape = RoundedCornerShape(4.dp),

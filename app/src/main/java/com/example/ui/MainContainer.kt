@@ -90,10 +90,10 @@ enum class NavDestination(
     val unselectedIcon: androidx.compose.ui.graphics.vector.ImageVector
 ) {
     HOME("home", "Dashboard", Icons.Filled.Home, Icons.Outlined.Home),
-    LIBRARY("library", "Library", Icons.AutoMirrored.Filled.MenuBook, Icons.AutoMirrored.Outlined.MenuBook),
+    LIBRARY("library", "Exercises", Icons.AutoMirrored.Filled.MenuBook, Icons.AutoMirrored.Outlined.MenuBook),
     ACTIVITY("activity", "Activity", Icons.Filled.History, Icons.Outlined.History),
-    TABLE("table", "Program", Icons.Filled.GridOn, Icons.Outlined.GridOn),
-    LOGGER("logger", "Live Logger", Icons.Filled.PlayCircleFilled, Icons.Outlined.PlayCircle),
+    TABLE("table", "Plan", Icons.Filled.GridOn, Icons.Outlined.GridOn),
+    LOGGER("logger", "Workout", Icons.Filled.PlayCircleFilled, Icons.Outlined.PlayCircle),
     PROGRESS("progress", "Analytics", Icons.Filled.Timeline, Icons.Outlined.Timeline),
     PLATE_CALC("plate_calc", "Plate Calc", Icons.Filled.FitnessCenter, Icons.Outlined.FitnessCenter),
     GUIDE("guide", "Science Guide", Icons.Filled.HealthAndSafety, Icons.Outlined.HealthAndSafety),
@@ -143,6 +143,20 @@ fun MainContainer(
     Scaffold(
         topBar = {
             TopAppBar(
+                navigationIcon = {
+                    if (currentDestination != NavDestination.HOME && currentDestination != NavDestination.LOGGER) {
+                        IconButton(
+                            onClick = { currentDestination = NavDestination.HOME },
+                            modifier = Modifier.testTag("top_bar_back_button")
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Back to Dashboard",
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
+                },
                 title = {
                     androidx.compose.foundation.layout.Row(
                         verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
@@ -155,22 +169,22 @@ fun MainContainer(
                                 modifier = Modifier.size(24.dp)
                             )
                             androidx.compose.foundation.layout.Spacer(modifier = Modifier.padding(start = 8.dp))
-                        } else {
+                        } else if (currentDestination == NavDestination.HOME) {
                             WomensStrengthLogoIcon(size = 28.dp)
                             androidx.compose.foundation.layout.Spacer(modifier = Modifier.padding(start = 10.dp))
                         }
                         Text(
                             text = when (currentDestination) {
-                                NavDestination.HOME -> "Strength & Longevity"
-                                NavDestination.LIBRARY -> "Strength Exercise Library"
-                                NavDestination.ACTIVITY -> "Recent Workout Activity"
-                                NavDestination.TABLE -> "Program"
-                                NavDestination.LOGGER -> "Live Session"
-                                NavDestination.PROGRESS -> "Analytics"
-                                NavDestination.PLATE_CALC -> "Plate Calc"
-                                NavDestination.GUIDE -> "Longevity Guide"
-                                NavDestination.ASSESSMENT -> "Assessment"
-                                NavDestination.PROFILE_SETUP -> "Account"
+                                NavDestination.HOME -> "Vital Strength"
+                                NavDestination.LIBRARY -> "Exercise Library"
+                                NavDestination.ACTIVITY -> "Workout History"
+                                NavDestination.TABLE -> "Workout Plan"
+                                NavDestination.LOGGER -> "Active Workout"
+                                NavDestination.PROGRESS -> "Progress & Analytics"
+                                NavDestination.PLATE_CALC -> "Plate Calculator"
+                                NavDestination.GUIDE -> "Bone Science Guide"
+                                NavDestination.ASSESSMENT -> "Health Assessment"
+                                NavDestination.PROFILE_SETUP -> "My Profile"
                             },
                             fontWeight = FontWeight.Bold,
                             style = MaterialTheme.typography.titleMedium,
@@ -189,7 +203,7 @@ fun MainContainer(
                         ) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.HelpOutline,
-                                contentDescription = "Replay Progressive Overload Science Onboarding",
+                                contentDescription = "Replay Welcome Guide",
                                 tint = MaterialTheme.colorScheme.primary
                             )
                         }
@@ -200,7 +214,7 @@ fun MainContainer(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.AccountCircle,
-                                contentDescription = "Account & Profile",
+                                contentDescription = "My Profile",
                                 tint = MaterialTheme.colorScheme.primary
                             )
                         }
@@ -479,7 +493,8 @@ fun MainContainer(
                     ProfileSetupScreen(
                         viewModel = viewModel,
                         onOpenAuthDialog = { showAuthDialog = true },
-                        onNavigateBack = { currentDestination = NavDestination.HOME }
+                        onNavigateBack = { currentDestination = NavDestination.HOME },
+                        onNavigateToAssessment = { currentDestination = NavDestination.ASSESSMENT }
                     )
                 }
             }

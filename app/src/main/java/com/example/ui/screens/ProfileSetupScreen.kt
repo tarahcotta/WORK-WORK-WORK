@@ -45,6 +45,7 @@ fun ProfileSetupScreen(
     viewModel: VitalViewModel,
     onOpenAuthDialog: () -> Unit,
     onNavigateBack: () -> Unit,
+    onNavigateToAssessment: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val currentUser by viewModel.currentUser.collectAsState()
@@ -62,34 +63,55 @@ fun ProfileSetupScreen(
 
     val availableFitnessGoals = remember {
         listOf(
-            "Bone Mineral Density & Osteogenesis",
-            "Joint & Cartilage Longevity",
-            "Posture & Spinal Health",
-            "Metabolic Vitality & Glycemic Control",
-            "Sarcopenia & Muscle Mass Preservation",
-            "Balance, Stability & Fall Prevention"
+            "Bone Strength (Spine & Hips)",
+            "Joint Comfort & Mobility",
+            "Posture & Core Stability",
+            "Energy & Metabolic Health",
+            "Lean Muscle & Strength",
+            "Balance & Fall Prevention"
         )
     }
 
     val availableRecoveryGoals = remember {
         listOf(
-            "Optimal Sleep & Circadian Alignment",
-            "CNS Support & Nervous System Recovery",
-            "Myofascial Release & Mobility",
-            "Nutrient Timing & Metabolic Support",
-            "Hydration & Electrolyte Homeostasis"
+            "Restful Sleep & Recovery",
+            "Stress Relief & Relaxation",
+            "Flexibility & Muscle Ease",
+            "Healthy Nutrition & Energy",
+            "Daily Hydration & Vitality"
         )
     }
 
     val selectedGoals = remember(currentProfile) {
         val initial = currentProfile?.fitnessGoals?.split(",")?.map { it.trim() }?.filter { it.isNotEmpty() }
-            ?: listOf("Bone Mineral Density & Osteogenesis", "Joint & Cartilage Longevity", "Posture & Spinal Health")
+            ?.map { oldGoal ->
+                when {
+                    oldGoal.contains("Bone", ignoreCase = true) -> "Bone Strength (Spine & Hips)"
+                    oldGoal.contains("Joint", ignoreCase = true) -> "Joint Comfort & Mobility"
+                    oldGoal.contains("Posture", ignoreCase = true) -> "Posture & Core Stability"
+                    oldGoal.contains("Metabolic", ignoreCase = true) -> "Energy & Metabolic Health"
+                    oldGoal.contains("Muscle", ignoreCase = true) || oldGoal.contains("Sarcopenia", ignoreCase = true) -> "Lean Muscle & Strength"
+                    oldGoal.contains("Balance", ignoreCase = true) -> "Balance & Fall Prevention"
+                    else -> oldGoal
+                }
+            }
+            ?: listOf("Bone Strength (Spine & Hips)", "Joint Comfort & Mobility", "Posture & Core Stability")
         mutableStateOf(initial.toSet())
     }
 
     val selectedRecoveryGoals = remember(currentProfile) {
         val initial = currentProfile?.recoveryGoals?.split(",")?.map { it.trim() }?.filter { it.isNotEmpty() }
-            ?: listOf("Optimal Sleep & Circadian Alignment", "Myofascial Release & Mobility")
+            ?.map { oldGoal ->
+                when {
+                    oldGoal.contains("Sleep", ignoreCase = true) -> "Restful Sleep & Recovery"
+                    oldGoal.contains("CNS", ignoreCase = true) || oldGoal.contains("Stress", ignoreCase = true) -> "Stress Relief & Relaxation"
+                    oldGoal.contains("Mobility", ignoreCase = true) || oldGoal.contains("Myofascial", ignoreCase = true) -> "Flexibility & Muscle Ease"
+                    oldGoal.contains("Nutrient", ignoreCase = true) || oldGoal.contains("Nutrition", ignoreCase = true) -> "Healthy Nutrition & Energy"
+                    oldGoal.contains("Hydration", ignoreCase = true) -> "Daily Hydration & Vitality"
+                    else -> oldGoal
+                }
+            }
+            ?: listOf("Restful Sleep & Recovery", "Flexibility & Muscle Ease")
         mutableStateOf(initial.toSet())
     }
 
@@ -143,16 +165,77 @@ fun ProfileSetupScreen(
                 Spacer(modifier = Modifier.width(16.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = "Account & Profile Setup",
+                        text = "My Profile & Preferences",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                     Text(
-                        text = "Tailor your longevity programming based on age, goals & preferences.",
+                        text = "Personalize your workout plan, goals, and weekly schedule.",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
                     )
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Health & Joint Assessment Link Card
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(18.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Row(
+                    modifier = Modifier.weight(1f),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Surface(
+                        shape = CircleShape,
+                        color = MaterialTheme.colorScheme.primaryContainer,
+                        modifier = Modifier.size(40.dp)
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(
+                                imageVector = Icons.Default.Shield,
+                                contentDescription = "Health Assessment",
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(22.dp)
+                            )
+                        }
+                    }
+                    Column {
+                        Text(
+                            text = "Health & Joint History",
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Text(
+                            text = "Protect sensitive joints (knees, spine, shoulders)",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+
+                OutlinedButton(
+                    onClick = onNavigateToAssessment,
+                    shape = RoundedCornerShape(10.dp),
+                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
+                    modifier = Modifier.testTag("open_assessment_button")
+                ) {
+                    Text("Review", fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
                 }
             }
         }
@@ -345,13 +428,13 @@ fun ProfileSetupScreen(
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(
-                    text = "Longevity & Fitness Goals",
+                    text = "Primary Health & Longevity Goals",
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary
                 )
                 Text(
-                    text = "Select all primary health and longevity outcomes you wish to prioritize:",
+                    text = "Choose the benefits you want to focus on most:",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -408,13 +491,13 @@ fun ProfileSetupScreen(
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(
-                    text = "Recovery & Lifestyle Optimization",
+                    text = "Rest & Recovery Focus",
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary
                 )
                 Text(
-                    text = "Personalize your recovery protocols to ensure optimal adaptation to axial loading:",
+                    text = "Select daily habits that help you recover and stay energized:",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
