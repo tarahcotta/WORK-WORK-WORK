@@ -4,40 +4,40 @@
     <!-- Navigation & Core Screens -->
     <string name="nav_home">Home</string>
     <string name="nav_dashboard">Dashboard</string>
-    <string name="nav_routines">Routines</string>
+    <string name="nav_routines">Workouts</string>
     <string name="nav_exercises">Exercises</string>
-    <string name="nav_analytics">Analytics</string>
-    <string name="nav_plate_calculator">Plate Calc</string>
-    <string name="nav_longevity_guide">Science Guide</string>
+    <string name="nav_analytics">Progress</string>
+    <string name="nav_plate_calculator">Barbell Plates</string>
+    <string name="nav_longevity_guide">Strength Guide</string>
 
     <!-- Workout & Set Terminology -->
     <!-- LOCATION: Exercise set logging -->
     <string name="set_count">Set %1$d</string>
-    <string name="completed_sets_format">%1$d of %2$d sets completed</string>
+    <string name="completed_sets_format">%1$d of %2$d sets done</string>
     <string name="weight_lbs_format">%1$s lbs</string>
     <string name="reps_count_format">%1$d reps</string>
 
     <!-- Clinical & Performance Disambiguation -->
     <!-- LOCATION: Rating of Perceived Exertion (1-10) -->
-    <string name="rpe_label">RPE %1$s</string>
-    <string name="rpe_full_name">Rating of Perceived Exertion</string>
+    <string name="rpe_label">Effort %1$s/10</string>
+    <string name="rpe_full_name">How hard did this set feel?</string>
 
     <!-- LOCATION: Personal Record notification -->
-    <string name="pr_notification_title">New Personal Record (PR)!</string>
-    <string name="pr_notification_body">%1$s: %2$s lbs (Previous Best: %3$s lbs)</string>
+    <string name="pr_notification_title">🎉 New Personal Record!</string>
+    <string name="pr_notification_body">%1$s: %2$s lbs (You beat your previous best of %3$s lbs!)</string>
 
     <!-- LOCATION: Bone Mineral Density & T-Score -->
-    <string name="bmd_t_score_format">T-Score: %1$.1f</string>
-    <string name="osteogenic_load_score">Osteogenic Load: %1$d pts</string>
+    <string name="bmd_t_score_format">Bone Score (T-Score): %1$.1f</string>
+    <string name="osteogenic_load_score">Bone-Building Score: %1$d pts</string>
 
     <!-- Actions & Buttons -->
-    <string name="action_start_routine">Start Today\'s Routine</string>
-    <string name="action_resume_session">Resume Active Session</string>
-    <string name="action_finish_workout">Finish Workout</string>
-    <string name="action_cancel">Cancel</string>
+    <string name="action_start_routine">Start Today\'s Workout</string>
+    <string name="action_resume_session">Resume Workout</string>
+    <string name="action_finish_workout">Complete Workout</string>
+    <string name="action_cancel">Not now</string>
     <string name="action_save">Save Changes</string>
-    <string name="action_calculate">Calculate Plates</string>
-    <string name="action_substitute">Substitute Exercise</string>
+    <string name="action_calculate">Show Plate Layout</string>
+    <string name="action_substitute">Swap Exercise</string>
 
     <!-- Plurals -->
     <plurals name="workout_weeks_count">
