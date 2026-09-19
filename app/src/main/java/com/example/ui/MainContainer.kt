@@ -83,6 +83,9 @@ import com.example.ui.screens.ProgressAnalyticsScreen
 import com.example.ui.screens.RecentActivitySummaryScreen
 import com.example.ui.screens.RoutineTableScreen
 
+import com.example.ui.screens.ToolsScreen
+import com.example.ui.screens.ProgressPhotosScreen
+
 enum class NavDestination(
     val route: String,
     val title: String,
@@ -97,9 +100,12 @@ enum class NavDestination(
     PROGRESS("progress", "Analytics", Icons.Filled.Timeline, Icons.Outlined.Timeline),
     PLATE_CALC("plate_calc", "Plate Calc", Icons.Filled.FitnessCenter, Icons.Outlined.FitnessCenter),
     GUIDE("guide", "Science Guide", Icons.Filled.HealthAndSafety, Icons.Outlined.HealthAndSafety),
+    PHOTOS("photos", "Photos", Icons.Default.PhotoLibrary, Icons.Default.PhotoLibrary),
+    TOOLS("tools", "Tools", Icons.Filled.GridOn, Icons.Outlined.GridOn),
     ASSESSMENT("assessment", "Assessment", Icons.AutoMirrored.Filled.Assignment, Icons.AutoMirrored.Outlined.Assignment),
     PROFILE_SETUP("profile_setup", "Profile", Icons.Filled.AccountCircle, Icons.Outlined.AccountCircle)
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -137,6 +143,7 @@ fun MainContainer(
         NavDestination.HOME,
         NavDestination.LIBRARY,
         NavDestination.TABLE,
+        NavDestination.TOOLS,
         NavDestination.PROFILE_SETUP
     )
 
@@ -183,6 +190,7 @@ fun MainContainer(
                                 NavDestination.PROGRESS -> "Progress & Analytics"
                                 NavDestination.PLATE_CALC -> "Plate Calculator"
                                 NavDestination.GUIDE -> "Bone Science Guide"
+                                NavDestination.TOOLS -> "Tools"
                                 NavDestination.ASSESSMENT -> "Health Assessment"
                                 NavDestination.PROFILE_SETUP -> "My Profile"
                             },
@@ -463,9 +471,28 @@ fun MainContainer(
                     )
                 }
 
+                NavDestination.TOOLS -> {
+                    ToolsScreen(
+                        onNavigateToPlateCalc = { currentDestination = NavDestination.PLATE_CALC },
+                        onNavigateToGuide = { currentDestination = NavDestination.GUIDE },
+                        onNavigateToPhotos = { currentDestination = NavDestination.PHOTOS }
+                    )
+                }
+
                 NavDestination.PLATE_CALC -> {
                     PlateCalculatorScreen(
-                        onNavigateBack = { currentDestination = NavDestination.HOME }
+                        onNavigateBack = { currentDestination = NavDestination.TOOLS }
+                    )
+                }
+                
+                NavDestination.GUIDE -> {
+                    LongevityGuideScreen()
+                }
+                
+                NavDestination.PHOTOS -> {
+                    ProgressPhotosScreen(
+                        viewModel = viewModel,
+                        onNavigateBack = { currentDestination = NavDestination.TOOLS }
                     )
                 }
 
