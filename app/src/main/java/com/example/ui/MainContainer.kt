@@ -450,6 +450,7 @@ fun MainContainer(
                         exercises = exercises + customExercisesForSession,
                         personalBests = personalBests,
                         userProfile = profile,
+                        viewModel = viewModel,
                         onSaveSession = { title, loggedSets, feel, notes ->
                             isSessionActive = false
                             viewModel.logWorkoutSession(title, loggedSets, feel, notes)

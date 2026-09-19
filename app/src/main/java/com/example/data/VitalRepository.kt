@@ -57,6 +57,10 @@ class VitalRepository(
         return dao.getMaxWeightForExercise(exerciseName)
     }
 
+    suspend fun getLastSetForExercise(exerciseName: String): LoggedSetEntity? {
+        return dao.getLastSetForExercise(exerciseName)
+    }
+
     suspend fun saveUserProfile(profile: UserProfileEntity, userId: String? = null) {
         dao.saveUserProfile(profile)
         // Auto-generate fresh custom routines based on updated profile

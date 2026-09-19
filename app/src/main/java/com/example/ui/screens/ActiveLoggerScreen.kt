@@ -177,6 +177,7 @@ fun ActiveLoggerScreen(
     exercises: List<WorkoutExerciseEntity>,
     personalBests: Map<String, Float> = emptyMap(),
     userProfile: com.example.data.UserProfileEntity? = null,
+    viewModel: com.example.ui.VitalViewModel,
     onSaveSession: (routineTitle: String, sets: List<LoggedSetEntity>, feel: String, notes: String) -> Unit,
     onCancel: () -> Unit,
     modifier: Modifier = Modifier
@@ -224,18 +225,26 @@ fun ActiveLoggerScreen(
     val snackbarHostState = remember { SnackbarHostState() }
 
     // Exercise log states
-    val exerciseLogs = remember(exercises) {
-        val list = mutableStateListOf<ExerciseLogState>()
+    val exerciseLogs = remember(exercises) { mutableStateListOf<ExerciseLogState>() }
+
+    LaunchedEffect(exercises) {
+        exerciseLogs.clear()
         exercises.forEach { ex ->
             val setInputs = mutableStateListOf<SetLogInput>()
-            val initialWeight = personalBests[ex.exerciseName]?.let { if (it > 0f) "${it.toInt()}" else null } ?: run {
-                // Infer baseline load based on strength level
-                when (userProfile?.strengthLevel) {
-                    "Beginner" -> "15"
-                    "Advanced" -> "45"
-                    else -> "25" // Intermediate or null
+            
+            // Try to get last weight
+            val lastSet = viewModel.getLastSetForExercise(ex.exerciseName)
+            val initialWeight = lastSet?.weightLbs?.toInt()?.toString()
+                ?: personalBests[ex.exerciseName]?.let { if (it > 0f) "${it.toInt()}" else null }
+                ?: run {
+                    // Infer baseline load based on strength level
+                    when (userProfile?.strengthLevel) {
+                        "Beginner" -> "15"
+                        "Advanced" -> "45"
+                        else -> "25" // Intermediate or null
+                    }
                 }
-            }
+            
             for (s in 1..ex.sets) {
                 setInputs.add(
                     SetLogInput(
@@ -247,7 +256,7 @@ fun ActiveLoggerScreen(
                     )
                 )
             }
-            list.add(
+            exerciseLogs.add(
                 ExerciseLogState(
                     exerciseName = ex.exerciseName,
                     primaryGoal = ex.primaryGoal,
@@ -256,7 +265,6 @@ fun ActiveLoggerScreen(
                 )
             )
         }
-        list
     }
 
     var overallFeel by remember { mutableStateOf("Strong & Energized") }

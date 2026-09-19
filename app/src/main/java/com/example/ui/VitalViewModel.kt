@@ -338,6 +338,10 @@ class VitalViewModel(application: Application) : AndroidViewModel(application) {
     fun getSetsForSession(sessionId: Long) = repository.getSetsForSession(sessionId)
     fun getMaxWeightForExercise(exerciseName: String) = repository.getMaxWeightForExercise(exerciseName)
 
+    suspend fun getLastSetForExercise(exerciseName: String): LoggedSetEntity? {
+        return repository.getLastSetForExercise(exerciseName)
+    }
+
     fun addProgressPhotoFromUri(uri: Uri, poseTag: String, bodyWeightLbs: Float?, notes: String) {
         viewModelScope.launch {
             val localPath = LocalPhotoStorageManager.saveImageFromUri(getApplication(), uri)

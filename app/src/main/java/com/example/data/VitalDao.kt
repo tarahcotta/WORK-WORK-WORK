@@ -98,6 +98,9 @@ interface VitalDao {
     @Query("SELECT MAX(weightLbs) FROM logged_sets WHERE exerciseName = :exerciseName")
     fun getMaxWeightForExercise(exerciseName: String): Flow<Float?>
 
+    @Query("SELECT * FROM logged_sets WHERE exerciseName = :exerciseName ORDER BY id DESC LIMIT 1")
+    suspend fun getLastSetForExercise(exerciseName: String): LoggedSetEntity?
+
     @Query("SELECT * FROM logged_sets WHERE exerciseName = :exerciseName ORDER BY id DESC LIMIT 10")
     fun getRecentSetsForExercise(exerciseName: String): Flow<List<LoggedSetEntity>>
 
