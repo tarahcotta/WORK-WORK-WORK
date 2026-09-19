@@ -56,5 +56,13 @@
         <item quantity="one">%1$d time / week</item>
         <item quantity="other">%1$d times / week</item>
     </plurals>
+    <!-- Tools Screen -->
+    <string name="title_utility_tools">Utility Tools</string>
+    <string name="title_plate_calc">Plate Calculator</string>
+    <string name="desc_plate_calc">Quickly calculate barbell plate requirements.</string>
+    <string name="title_bone_guide">Bone Science Guide</string>
+    <string name="desc_bone_guide">Learn the science behind your longevity.</string>
+    <string name="title_progress_photos">Progress Photos</string>
+    <string name="desc_progress_photos">Track your physical transformation.</string>
 </resources>
 

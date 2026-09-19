@@ -17,6 +17,7 @@ import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Assignment
 import androidx.compose.material.icons.filled.CloudSync
 import androidx.compose.material.icons.filled.FitnessCenter
+import androidx.compose.material.icons.filled.PhotoLibrary
 import com.example.ui.components.AuthDialog
 import androidx.compose.material.icons.filled.GridOn
 import androidx.compose.material.icons.filled.HealthAndSafety
@@ -47,6 +48,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -57,7 +60,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
@@ -100,7 +105,7 @@ enum class NavDestination(
     PROGRESS("progress", "Analytics", Icons.Filled.Timeline, Icons.Outlined.Timeline),
     PLATE_CALC("plate_calc", "Plate Calc", Icons.Filled.FitnessCenter, Icons.Outlined.FitnessCenter),
     GUIDE("guide", "Science Guide", Icons.Filled.HealthAndSafety, Icons.Outlined.HealthAndSafety),
-    PHOTOS("photos", "Photos", Icons.Default.PhotoLibrary, Icons.Default.PhotoLibrary),
+    PHOTOS("photos", "Photos", Icons.Filled.PhotoLibrary, Icons.Filled.PhotoLibrary),
     TOOLS("tools", "Tools", Icons.Filled.GridOn, Icons.Outlined.GridOn),
     ASSESSMENT("assessment", "Assessment", Icons.AutoMirrored.Filled.Assignment, Icons.AutoMirrored.Outlined.Assignment),
     PROFILE_SETUP("profile_setup", "Profile", Icons.Filled.AccountCircle, Icons.Outlined.AccountCircle)
@@ -118,6 +123,8 @@ fun MainContainer(
     var customExercisesForSession by remember { mutableStateOf<List<com.example.data.WorkoutExerciseEntity>>(emptyList()) }
     var showThemeMenu by remember { mutableStateOf(false) }
     var showAuthDialog by remember { mutableStateOf(false) }
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
 
     val themeMode by viewModel.themeMode.collectAsState()
     val weightUnit by viewModel.weightUnit.collectAsState()
@@ -148,6 +155,7 @@ fun MainContainer(
     )
 
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
                 navigationIcon = {
@@ -191,6 +199,7 @@ fun MainContainer(
                                 NavDestination.PLATE_CALC -> "Plate Calculator"
                                 NavDestination.GUIDE -> "Bone Science Guide"
                                 NavDestination.TOOLS -> "Tools"
+                                NavDestination.PHOTOS -> "Progress Photos"
                                 NavDestination.ASSESSMENT -> "Health Assessment"
                                 NavDestination.PROFILE_SETUP -> "My Profile"
                             },
@@ -445,7 +454,30 @@ fun MainContainer(
                             isSessionActive = false
                             viewModel.logWorkoutSession(title, loggedSets, feel, notes)
                             customExercisesForSession = emptyList()
-                            currentDestination = NavDestination.HOME
+                            
+                            var nextRoutine: WorkoutRoutineEntity? = null
+                            var nextDestination = NavDestination.HOME
+
+                            if (title.contains("Day 1", ignoreCase = true)) {
+                                nextRoutine = routines.find { it.dayName.contains("Day 2", ignoreCase = true) }
+                            } else if (title.contains("Day 2", ignoreCase = true)) {
+                                nextRoutine = routines.find { it.dayName.contains("Day 3", ignoreCase = true) }
+                            }
+
+                            if (nextRoutine != null) {
+                                viewModel.selectRoutine(nextRoutine)
+                                nextDestination = NavDestination.TABLE
+                            }
+
+                            coroutineScope.launch {
+                                val message = if (nextRoutine != null) {
+                                    "$title recorded. Preparing ${nextRoutine.dayName}..."
+                                } else {
+                                    "$title recorded!"
+                                }
+                                snackbarHostState.showSnackbar(message)
+                                currentDestination = nextDestination
+                            }
                         },
                         onCancel = { 
                             isSessionActive = false
@@ -491,8 +523,7 @@ fun MainContainer(
                 
                 NavDestination.PHOTOS -> {
                     ProgressPhotosScreen(
-                        viewModel = viewModel,
-                        onNavigateBack = { currentDestination = NavDestination.TOOLS }
+                        viewModel = viewModel
                     )
                 }
 

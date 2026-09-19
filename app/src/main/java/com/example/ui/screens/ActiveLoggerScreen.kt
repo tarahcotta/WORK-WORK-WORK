@@ -456,7 +456,7 @@ fun ActiveLoggerScreen(
                                 ) {
                                     Icon(
                                         imageVector = Icons.Default.Close,
-                                        contentDescription = "Close Workout",
+                                        contentDescription = "Close workout",
                                         modifier = Modifier.size(18.dp)
                                     )
                                 }
@@ -530,7 +530,7 @@ fun ActiveLoggerScreen(
                                 ) {
                                     Icon(
                                         imageVector = Icons.Default.Close,
-                                        contentDescription = "Close Workout",
+                                        contentDescription = "Close workout",
                                         modifier = Modifier.size(18.dp)
                                     )
                                 }

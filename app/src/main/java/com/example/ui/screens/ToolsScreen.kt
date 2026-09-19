@@ -13,6 +13,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
+import androidx.compose.ui.res.stringResource
+import com.example.R
+
 @Composable
 fun ToolsScreen(
     onNavigateToPlateCalc: () -> Unit,
@@ -25,7 +28,7 @@ fun ToolsScreen(
     ) {
         item {
             Text(
-                text = "Utility Tools",
+                text = stringResource(id = R.string.title_utility_tools),
                 style = MaterialTheme.typography.headlineMedium,
                 color = MaterialTheme.colorScheme.primary
             )
@@ -33,8 +36,8 @@ fun ToolsScreen(
         
         item {
             ToolCard(
-                title = "Plate Calculator",
-                description = "Quickly calculate barbell plate requirements.",
+                title = stringResource(id = R.string.title_plate_calc),
+                description = stringResource(id = R.string.desc_plate_calc),
                 icon = Icons.Default.Calculate,
                 onClick = onNavigateToPlateCalc
             )
@@ -42,8 +45,8 @@ fun ToolsScreen(
 
         item {
             ToolCard(
-                title = "Bone Science Guide",
-                description = "Learn the science behind your longevity.",
+                title = stringResource(id = R.string.title_bone_guide),
+                description = stringResource(id = R.string.desc_bone_guide),
                 icon = Icons.Default.HealthAndSafety,
                 onClick = onNavigateToGuide
             )
@@ -51,8 +54,8 @@ fun ToolsScreen(
         
         item {
             ToolCard(
-                title = "Progress Photos",
-                description = "Track your physical transformation.",
+                title = stringResource(id = R.string.title_progress_photos),
+                description = stringResource(id = R.string.desc_progress_photos),
                 icon = Icons.Default.PhotoLibrary,
                 onClick = onNavigateToPhotos
             )
