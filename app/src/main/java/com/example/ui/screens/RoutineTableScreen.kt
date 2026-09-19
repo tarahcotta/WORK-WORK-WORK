@@ -266,8 +266,8 @@ fun RoutineTableScreen(
                                             fontWeight = FontWeight.ExtraBold,
                                             color = MaterialTheme.colorScheme.onSurface
                                         )
-                                        Text(
-                                            text = "Prescription: 3-4 Sets · Heavy Osteogenic Loading",
+                                         Text(
+                                            text = "Plan: 3-4 Sets · Bone & Muscle Strengthening",
                                             style = MaterialTheme.typography.labelSmall,
                                             color = MaterialTheme.colorScheme.primary,
                                             fontWeight = FontWeight.SemiBold
@@ -282,7 +282,7 @@ fun RoutineTableScreen(
                                     color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f)
                                 ) {
                                     Text(
-                                        text = "AXIAL LOAD",
+                                        text = "STRENGTH FOCUS",
                                         style = MaterialTheme.typography.labelSmall,
                                         fontWeight = FontWeight.ExtraBold,
                                         letterSpacing = 0.5.sp,
@@ -308,9 +308,9 @@ fun RoutineTableScreen(
 
                             // Anatomical & Bone Density Target Pills (Fixed multi-line text wrapping bug)
                             val targetBadges = when {
-                                activeRoutine.dayName.contains("1", ignoreCase = true) || activeRoutine.dayName.contains("Squat", ignoreCase = true) -> listOf("🦴 Femur & Lumbar", "🏋️ Squat Pattern", "🛡️ Postural Stability")
-                                activeRoutine.dayName.contains("2", ignoreCase = true) || activeRoutine.dayName.contains("Hinge", ignoreCase = true) -> listOf("🦴 Femur Neck & Pelvis", "🖐️ Forearm & Grip", "⚡ Posterior Chain")
-                                else -> listOf("🦴 Thoracic & Ribs", "💪 Scapular Stabilizers", "🏋️ Overhead Push")
+                                activeRoutine.dayName.contains("1", ignoreCase = true) || activeRoutine.dayName.contains("Squat", ignoreCase = true) -> listOf("🦴 Legs & Spine", "🏋️ Squat Pattern", "🛡️ Posture & Balance")
+                                activeRoutine.dayName.contains("2", ignoreCase = true) || activeRoutine.dayName.contains("Hinge", ignoreCase = true) -> listOf("🦴 Hips & Lower Back", "🖐️ Grip Strength", "⚡ Back & Glutes")
+                                else -> listOf("🦴 Upper Body", "💪 Shoulder Stability", "🏋️ Overhead Push")
                             }
 
                             Row(
@@ -357,13 +357,13 @@ fun RoutineTableScreen(
                     ) {
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                text = "Prescribed Exercises",
+                                text = "Today's Exercises",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
-                                text = "Targeting spine, hip & femur bone density stimulus",
+                                text = "Targeting spine, hips, and core stability",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -822,7 +822,7 @@ fun RoutineTableScreen(
                     ) {
                         Icon(imageVector = Icons.Default.Refresh, contentDescription = "Regenerate Program")
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Regenerate Program from Profile", fontWeight = FontWeight.SemiBold)
+                        Text("Refresh Plan from Profile", fontWeight = FontWeight.SemiBold)
                     }
                 } else {
                     Box(
@@ -884,7 +884,7 @@ fun RoutineTableScreen(
                             Icon(imageVector = Icons.Default.PlayArrow, contentDescription = "Start Workout")
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
-                                text = "Start Logging This Session",
+                                text = "Start Workout",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold
                             )

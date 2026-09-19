@@ -374,7 +374,7 @@ fun DashboardScreen(
                         verticalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
                         Text(
-                            text = "NEXT SESSION",
+                            text = "NEXT WORKOUT",
                             style = MaterialTheme.typography.labelMedium,
                             fontWeight = FontWeight.ExtraBold,
                             color = MaterialTheme.colorScheme.primary,
@@ -414,7 +414,7 @@ fun DashboardScreen(
                     Icon(imageVector = if (isSessionActive) Icons.Default.Refresh else Icons.Default.PlayArrow, contentDescription = "Start Workout", modifier = Modifier.size(24.dp))
                     Spacer(modifier = Modifier.width(10.dp))
                     Text(
-                        text = if (isSessionActive) "RESUME SESSION" else "START WORKOUT",
+                        text = if (isSessionActive) "RESUME WORKOUT" else "START TODAY'S WORKOUT",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Black,
                         maxLines = 1
@@ -432,12 +432,12 @@ fun DashboardScreen(
                     )
                     ClinicalInsightPill(
                         icon = Icons.Default.Bolt,
-                        text = "RPE 7-8 Target",
+                        text = "Effort 7-8/10",
                         modifier = Modifier.weight(1f)
                     )
                     ClinicalInsightPill(
                         icon = Icons.Default.CheckCircle,
-                        text = "$currentWeekSessionCount/$targetDaysPerWeek Done",
+                        text = "$currentWeekSessionCount of $targetDaysPerWeek Done",
                         modifier = Modifier.weight(1f)
                     )
                 }
@@ -491,22 +491,22 @@ fun DashboardScreen(
                         progress = (currentWeekSessionCount.toFloat() / targetDaysPerWeek.toFloat()).coerceAtMost(1f),
                         onClick = {
                             metricDetailExplanation = Pair(
-                                "Weekly Habit Adherence",
-                                "Resistance training 2-3 days per week provides the cyclical mechanical tension required to stimulate muscle protein synthesis and osteoblast-mediated bone mineral accretion. Current target: $targetDaysPerWeek sessions/week."
+                                "Weekly Consistency",
+                                "Lifting 2-3 times per week provides the stimulus needed to protect bone density and build lean muscle. Your current goal: $targetDaysPerWeek workouts each week."
                             )
                         },
                         modifier = Modifier.weight(1f)
                     )
                     DashboardHeaderMetric(
-                        label = "Stimulus",
+                        label = "Bone Stimulus",
                         value = if (latestBmdScore > 0) "${latestBmdScore / 1000}.${(latestBmdScore % 1000) / 100}k" else "--",
                         subtext = if (latestBmdScore >= 3000) "Optimal" else "Active",
                         statusColor = if (latestBmdScore >= 3000) Color(0xFF4CAF50) else MaterialTheme.colorScheme.primary,
                         progress = (latestBmdScore.toFloat() / 3000f).coerceAtMost(1f),
                         onClick = {
                             metricDetailExplanation = Pair(
-                                "Osteogenic Stimulus Index",
-                                "Based on Frost's Mechanostat Theory, bone density adaptation requires exceeding the minimum effective strain (MES) threshold (~3,000 lbs cumulative axial load). This metric tracks compressive loading on the spine and hip."
+                                "Bone-Building Stimulus",
+                                "Targeted strength training places healthy compressive force on your spine and hips, signaling your body to deposit new bone tissue and build lasting density."
                             )
                         },
                         modifier = Modifier.weight(1f)
@@ -517,27 +517,27 @@ fun DashboardScreen(
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
                     DashboardHeaderMetric(
-                        label = "Sessions",
+                        label = "Workouts",
                         value = "$totalSessionsLogged",
                         subtext = "Total",
                         statusColor = MaterialTheme.colorScheme.onSurface,
                         onClick = {
                             metricDetailExplanation = Pair(
-                                "Verified Lifetime Sessions",
-                                "$totalSessionsLogged completed workouts recorded in secure, offline-first local Room database with cryptographic session verification."
+                                "Completed Workouts",
+                                "You've logged $totalSessionsLogged completed workouts! Every single session contributes to your strength and bone health."
                             )
                         },
                         modifier = Modifier.weight(1f)
                     )
                     DashboardHeaderMetric(
-                        label = "Total Load",
+                        label = "Total Lifted",
                         value = "${totalVolumeAllTime / 1000}k",
                         subtext = "lbs",
                         statusColor = MaterialTheme.colorScheme.onSurface,
                         onClick = {
                             metricDetailExplanation = Pair(
-                                "Cumulative Lifetime Load",
-                                "${totalVolumeAllTime} lbs total lifted across all sets and exercises. Progressive mechanical tension stimulates sarcoplasmic and myofibrillar hypertrophy."
+                                "Cumulative Weight Lifted",
+                                "${totalVolumeAllTime} lbs total lifted across all your workouts. Every rep strengthens your bones, tendons, and muscles."
                             )
                         },
                         modifier = Modifier.weight(1f)
@@ -566,14 +566,14 @@ fun DashboardScreen(
                 selected = pagerState.currentPage == 0,
                 onClick = { coroutineScope.launch { pagerState.animateScrollToPage(0) } },
                 text = {
-                    Text("My Active Plan", fontWeight = if (pagerState.currentPage == 0) FontWeight.Black else FontWeight.Medium)
+                    Text("Today's Plan", fontWeight = if (pagerState.currentPage == 0) FontWeight.Black else FontWeight.Medium)
                 }
             )
             Tab(
                 selected = pagerState.currentPage == 1,
                 onClick = { coroutineScope.launch { pagerState.animateScrollToPage(1) } },
                 text = {
-                    Text("Clinical Insights", fontWeight = if (pagerState.currentPage == 1) FontWeight.Black else FontWeight.Medium)
+                    Text("Science & Progress", fontWeight = if (pagerState.currentPage == 1) FontWeight.Black else FontWeight.Medium)
                 }
             )
         }
@@ -1177,7 +1177,7 @@ fun BoneDensityTrendsVicoChartCard(
                             modifier = Modifier.size(13.dp)
                         )
                         Text(
-                            text = "BONE STIMULUS SCORE",
+                            text = "BONE STRENGTH SCORE",
                             style = MaterialTheme.typography.labelSmall,
                             fontWeight = FontWeight.Bold,
                             letterSpacing = 0.6.sp,
@@ -1192,7 +1192,7 @@ fun BoneDensityTrendsVicoChartCard(
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
                 ) {
                     Text(
-                        text = "BDSS Engine",
+                        text = "Bone Health",
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -1225,14 +1225,14 @@ fun BoneDensityTrendsVicoChartCard(
                 }
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = "Bone Density Stimulus Trends",
+                        text = "Bone Strength Stimulus",
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.ExtraBold,
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
-                        text = "Osteogenic loading stimulus score (BDSS) over time",
+                        text = "Tracking the bone-building stimulus of each workout",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -1391,7 +1391,7 @@ fun BoneDensityTrendsVicoChartCard(
                     Spacer(modifier = Modifier.height(12.dp))
 
                     Text(
-                        text = "Log axial movements (Barbell Squats, Deadlifts, Overhead Presses) with 70%+ 1RM to trigger osteogenic remodeling and replace this preview with your personal DXA-calibrated data.",
+                        text = "Compound lifts like squats, deadlifts, and overhead presses place healthy compressive force on your spine and hips, signaling your body to deposit new bone tissue and build lasting density.",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         lineHeight = 18.sp
@@ -1404,7 +1404,7 @@ fun BoneDensityTrendsVicoChartCard(
                         horizontalArrangement = Arrangement.End
                     ) {
                         TextButton(onClick = onNavigateToGuide) {
-                            Text("Learn Bone Science Guide")
+                            Text("Read Bone Science Guide →")
                         }
                     }
                 }
@@ -1426,7 +1426,7 @@ fun BoneDensityTrendsVicoChartCard(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(
-                                text = "CURRENT SCORE",
+                                text = "LATEST SCORE",
                                 style = MaterialTheme.typography.labelSmall,
                                 fontSize = 10.sp,
                                 fontWeight = FontWeight.Bold,
@@ -1455,7 +1455,7 @@ fun BoneDensityTrendsVicoChartCard(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(
-                                text = "PEAK STIMULUS",
+                                text = "BEST SESSION",
                                 style = MaterialTheme.typography.labelSmall,
                                 fontSize = 10.sp,
                                 fontWeight = FontWeight.Bold,
@@ -1486,7 +1486,7 @@ fun BoneDensityTrendsVicoChartCard(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(
-                                text = "STIMULUS GAIN",
+                                text = "TOTAL GAIN",
                                 style = MaterialTheme.typography.labelSmall,
                                 fontSize = 10.sp,
                                 fontWeight = FontWeight.Bold,
@@ -1543,7 +1543,7 @@ fun BoneDensityTrendsVicoChartCard(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = "STIMULUS TRAJECTORY",
+                                text = "STRENGTH OVER TIME",
                                 style = MaterialTheme.typography.labelSmall,
                                 fontWeight = FontWeight.Bold,
                                 letterSpacing = 0.5.sp,
@@ -1561,7 +1561,7 @@ fun BoneDensityTrendsVicoChartCard(
                                         .background(MaterialTheme.colorScheme.primary)
                                 )
                                 Text(
-                                    text = "BDSS / Session",
+                                    text = "Score per Workout",
                                     style = MaterialTheme.typography.labelSmall,
                                     fontSize = 11.sp,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -1699,13 +1699,13 @@ fun BoneDensityGoalProgressCard(
                     }
                     Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                         Text(
-                            text = "Bone Mineral Density Goals",
+                            text = "Bone Strength Goals",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
-                            text = "Clinical osteogenesis targets for longevity",
+                            text = "Targets to protect bone density and strengthen joints",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -1744,8 +1744,8 @@ fun BoneDensityGoalProgressCard(
             val axialTarget = 3000f
             val axialProgress = (latestBmdScore.toFloat() / axialTarget).coerceIn(0f, 1f)
             BmdGoalProgressItem(
-                title = "Axial Mechanical Stimulus (Spine & Hip)",
-                currentText = "$latestBmdScore / 3,000 BDSS",
+                title = "Bone-Building Stimulus (Spine & Hip)",
+                currentText = "$latestBmdScore / 3,000 pts",
                 progress = axialProgress,
                 statusText = if (axialProgress >= 1f) "Optimal Zone" else "${(axialProgress * 100).toInt()}% Target"
             )
@@ -1753,17 +1753,17 @@ fun BoneDensityGoalProgressCard(
             // Goal 2: Weekly Habit Adherence
             val habitProgress = (weeklyAdherence.toFloat() / 100f).coerceIn(0f, 1f)
             BmdGoalProgressItem(
-                title = "Weekly Frequency Adherence",
+                title = "Weekly Workout Goal",
                 currentText = "$weeklyAdherence% of ${profile?.scheduleDaysPerWeek ?: 3} days target",
                 progress = habitProgress,
-                statusText = if (weeklyAdherence >= 100) "Goal Reached" else "$weeklyAdherence%"
+                statusText = if (weeklyAdherence >= 100) "Goal Met" else "$weeklyAdherence%"
             )
 
             // Goal 3: Progressive Overload & RPE Target
             val totalSessions = sessions.size
             val consistencyProgress = (totalSessions.toFloat() / 12f).coerceIn(0f, 1f)
             BmdGoalProgressItem(
-                title = "12-Week Bone Remodeling Cycle",
+                title = "12-Week Bone-Building Cycle",
                 currentText = "$totalSessions / 12 sessions completed",
                 progress = consistencyProgress,
                 statusText = if (totalSessions >= 12) "Cycle Finished" else "Week ${(totalSessions / 3) + 1}"
@@ -2267,14 +2267,14 @@ fun DashboardEmptyState(onStartWorkoutClick: () -> Unit) {
             }
             Spacer(modifier = Modifier.height(24.dp))
             Text(
-                "Your Journey Begins Here",
+                "Ready for Your First Workout?",
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Black,
                 color = MaterialTheme.colorScheme.onSurface
             )
             Spacer(modifier = Modifier.height(12.dp))
             Text(
-                "Complete your first longevity workout to generate your baseline bone density and axial load metrics.",
+                "Start with your personalized Day 1 routine. We'll guide you step-by-step through each exercise and track your progress automatically.",
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
@@ -2290,7 +2290,7 @@ fun DashboardEmptyState(onStartWorkoutClick: () -> Unit) {
                 Icon(imageVector = Icons.Default.PlayArrow, contentDescription = null)
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(
-                    text = "START ROUTINE",
+                    text = "START FIRST WORKOUT",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Black,
                     maxLines = 1
@@ -2323,7 +2323,7 @@ private fun TodayRoutineFocusCard(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "ACTIVE PROTOCOL",
+                    text = "TODAY'S WORKOUT",
                     style = MaterialTheme.typography.labelSmall,
                     fontWeight = FontWeight.Black,
                     color = MaterialTheme.colorScheme.primary
@@ -2342,7 +2342,7 @@ private fun TodayRoutineFocusCard(
             Spacer(modifier = Modifier.height(4.dp))
             
             Text(
-                text = "Focused on maximizing strength and bone density preservation through targeted resistance.",
+                text = "Targeted resistance designed to build muscle, protect your spine and hips, and improve joint stability.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -2350,7 +2350,7 @@ private fun TodayRoutineFocusCard(
             Spacer(modifier = Modifier.height(16.dp))
             
             Text(
-                text = "Next scheduled session for your longevity protocol.",
+                text = "Tap Start Workout above whenever you're ready.",
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Bold

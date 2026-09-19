@@ -69,9 +69,9 @@ fun OnboardingScreen(
 
     val experienceLevels = remember {
         listOf(
-            Triple("Beginner / Novice", "New to strength training. Focus on form and baseline adaptation.", Icons.Default.FitnessCenter),
-            Triple("Intermediate", "Training for 6+ months. Comfortable with weights and machines.", Icons.Default.TrendingUp),
-            Triple("Advanced", "Experienced lifter. Ready for structured intensity cycles.", Icons.Default.Shield)
+            Triple("Beginner / Novice", "New to lifting. Learn confident form with lighter weights and guided movements.", Icons.Default.FitnessCenter),
+            Triple("Intermediate", "Consistent lifter. Ready to progressively increase load and master compound lifts.", Icons.AutoMirrored.Filled.TrendingUp),
+            Triple("Advanced", "Experienced lifter. Looking for targeted bone-density peaks and structured periodization.", Icons.Default.Shield)
         )
     }
 
@@ -222,7 +222,11 @@ fun OnboardingScreen(
                             shape = RoundedCornerShape(16.dp)
                         ) {
                             Text(
-                                text = if (pagerState.currentPage == 4) "Start My Longevity Journey" else "Next Step",
+                                text = when (pagerState.currentPage) {
+                                    4 -> "Start My Strength Journey"
+                                    0 -> "Let's Get Started"
+                                    else -> "Next Step"
+                                },
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 15.sp
                             )
@@ -334,7 +338,7 @@ private fun OnboardingWelcomePage(
         }
 
         Text(
-            text = "Science-Backed Strength for Women's Longevity",
+            text = "Build lasting strength, protect your bones, and feel energized at every age.",
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
@@ -343,7 +347,7 @@ private fun OnboardingWelcomePage(
         )
 
         Text(
-            text = "Build lasting strength and bone density with a protocol designed for your physiology.",
+            text = "Personalized strength training designed for women's physiology, joint longevity, and bone health.",
             style = MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -367,7 +371,7 @@ private fun OnboardingWelcomePage(
             )
             Spacer(modifier = Modifier.width(6.dp))
             Text(
-                text = "Explore App Instantly (Skip Setup)",
+                text = "Take a quick tour first →",
                 style = MaterialTheme.typography.labelLarge,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.primary
@@ -833,7 +837,7 @@ private fun OnboardingSummaryPage(
         }
 
         Text(
-            text = "Your Longevity Blueprint is Configured",
+            text = "Your Personalized Strength Plan is Ready",
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
@@ -842,7 +846,7 @@ private fun OnboardingSummaryPage(
         )
 
         Text(
-            text = "Here is a summary of your profile. You can modify these settings anytime in your Account profile.",
+            text = "Here is your starting setup. You can adjust your goals, weights, and routine preferences anytime in your Profile.",
             style = MaterialTheme.typography.bodyMedium,
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
