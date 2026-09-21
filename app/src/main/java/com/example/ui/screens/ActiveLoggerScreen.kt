@@ -1960,23 +1960,23 @@ fun ActiveLoggerScreen(
                 Surface(
                     shape = CircleShape,
                     color = Color(0xFF00C853).copy(alpha = 0.2f),
-                    modifier = Modifier.size(80.dp)
+                    modifier = Modifier.size(60.dp)
                 ) {
                     Box(contentAlignment = Alignment.Center) {
                         Icon(
                             imageVector = Icons.Default.CheckCircle,
                             contentDescription = null,
                             tint = Color(0xFF00C853),
-                            modifier = Modifier.size(48.dp)
+                            modifier = Modifier.size(36.dp)
                         )
                     }
                 }
                 
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(12.dp))
                 
                 Text(
                     text = "Session Mastered!",
-                    style = MaterialTheme.typography.headlineMedium,
+                    style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Black,
                     textAlign = TextAlign.Center
                 )

@@ -381,22 +381,23 @@ fun AssessmentScreen(
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(14.dp),
+                            .padding(8.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = "$daysCount Days / Wk",
-                            style = MaterialTheme.typography.titleMedium,
+                            text = "$daysCount Days",
+                            style = MaterialTheme.typography.labelLarge,
                             fontWeight = FontWeight.Bold,
                             color = if (isSelected) MaterialTheme.colorScheme.onTertiaryContainer else MaterialTheme.colorScheme.onSurface
                         )
                         Text(
                             text = when(daysCount) {
-                                2 -> "Full Body Split"
-                                3 -> "Longevity Split"
-                                else -> "Lower/Upper Split"
+                                2 -> "Full"
+                                3 -> "Longevity"
+                                else -> "Lower/Upper"
                             },
-                            style = MaterialTheme.typography.bodySmall,
+                            style = MaterialTheme.typography.labelSmall,
+                            textAlign = TextAlign.Center,
                             color = if (isSelected) MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.8f) else MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }

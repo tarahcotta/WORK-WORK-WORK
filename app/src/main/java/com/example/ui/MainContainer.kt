@@ -225,17 +225,6 @@ fun MainContainer(
                             )
                         }
 
-                        IconButton(
-                            onClick = { currentDestination = NavDestination.PROFILE_SETUP },
-                            modifier = Modifier.testTag("auth_dialog_button")
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.AccountCircle,
-                                contentDescription = "My Profile",
-                                tint = MaterialTheme.colorScheme.primary
-                            )
-                        }
-
                         Box {
                             IconButton(
                                 onClick = { showThemeMenu = true },
