@@ -1957,65 +1957,42 @@ fun ActiveLoggerScreen(
                     .padding(bottom = 40.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Surface(
-                    shape = CircleShape,
-                    color = Color(0xFF00C853).copy(alpha = 0.2f),
-                    modifier = Modifier.size(60.dp)
-                ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Icon(
-                            imageVector = Icons.Default.CheckCircle,
-                            contentDescription = null,
-                            tint = Color(0xFF00C853),
-                            modifier = Modifier.size(36.dp)
-                        )
-                    }
-                }
+                // Icon removed
                 
                 Spacer(modifier = Modifier.height(12.dp))
                 
                 Text(
-                    text = "Session Mastered!",
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Black,
+                    text = "Workout Complete",
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center
                 )
                 
                 Spacer(modifier = Modifier.height(8.dp))
                 
-                Text(
-                    text = "High-intensity loading confirmed. Osteogenic remodeling stimulated for 48-72 hours.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    textAlign = TextAlign.Center
-                )
+                // Text removed
                 
                 Spacer(modifier = Modifier.height(24.dp))
                 
-                Surface(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                // Metrics Row
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    Row(
-                        modifier = Modifier.padding(16.dp),
-                        horizontalArrangement = Arrangement.SpaceEvenly
-                    ) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text("Sets logged", style = MaterialTheme.typography.labelMedium)
-                            Text("$totalCompletedSets", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-                        }
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text("Intensity", style = MaterialTheme.typography.labelMedium)
-                            Text("8.2 avg", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-                        }
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text("Sets", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text("$totalCompletedSets", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                    }
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text("Intensity", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text("8.2", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
                     }
                 }
                 
                 Spacer(modifier = Modifier.height(24.dp))
 
                 val context = LocalContext.current
-                OutlinedButton(
+                TextButton(
                     onClick = {
                         val summaryText = buildString {
                             appendLine("🏋️ Workout Summary: $routineTitle")
@@ -2036,12 +2013,9 @@ fun ActiveLoggerScreen(
                         val shareIntent = Intent.createChooser(sendIntent, "Export Workout Summary")
                         context.startActivity(shareIntent)
                     },
-                    modifier = Modifier.fillMaxWidth().height(52.dp),
-                    shape = RoundedCornerShape(16.dp)
+                    modifier = Modifier.padding(top = 16.dp)
                 ) {
-                    Icon(imageVector = Icons.Default.Share, contentDescription = null, modifier = Modifier.size(18.dp))
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Export Workout Summary", fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                    Text("Export Summary", color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
 
                 Spacer(modifier = Modifier.height(12.dp))

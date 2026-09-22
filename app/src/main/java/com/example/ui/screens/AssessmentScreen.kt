@@ -154,104 +154,68 @@ fun AssessmentScreen(
         Spacer(modifier = Modifier.height(20.dp))
 
         // App Appearance & Theme Selection Card
-        Card(
-            modifier = Modifier.fillMaxWidth().testTag("app_theme_selection_card"),
-            shape = RoundedCornerShape(18.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
-        ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                AssessmentSectionHeader(
-                    title = "App Appearance & Theme",
-                    subtitle = "Switch between Light, Dark, or System mode while maintaining Geometric Balance contrast"
+        Column(modifier = Modifier.fillMaxWidth().testTag("app_theme_selection_card")) {
+            AssessmentSectionHeader(
+                title = "App Appearance & Theme",
+                subtitle = "Switch between Light, Dark, or System mode"
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                FilterChip(
+                    selected = themeMode == ThemeMode.LIGHT,
+                    onClick = { onThemeModeChange(ThemeMode.LIGHT) },
+                    label = { Text("Light") },
+                    leadingIcon = { Icon(Icons.Default.LightMode, contentDescription = "Select light theme", modifier = Modifier.size(16.dp)) },
+                    modifier = Modifier.weight(1f).testTag("theme_chip_light")
                 )
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    FilterChip(
-                        selected = themeMode == ThemeMode.LIGHT,
-                        onClick = { onThemeModeChange(ThemeMode.LIGHT) },
-                        label = { Text("Light") },
-                        leadingIcon = { Icon(Icons.Default.LightMode, contentDescription = "Icon", modifier = Modifier.size(16.dp)) },
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                            selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer
-                        ),
-                        modifier = Modifier.weight(1f).testTag("theme_chip_light")
-                    )
-
-                    FilterChip(
-                        selected = themeMode == ThemeMode.DARK,
-                        onClick = { onThemeModeChange(ThemeMode.DARK) },
-                        label = { Text("Dark") },
-                        leadingIcon = { Icon(Icons.Default.DarkMode, contentDescription = "Icon", modifier = Modifier.size(16.dp)) },
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                            selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer
-                        ),
-                        modifier = Modifier.weight(1f).testTag("theme_chip_dark")
-                    )
-
-                    FilterChip(
-                        selected = themeMode == ThemeMode.SYSTEM,
-                        onClick = { onThemeModeChange(ThemeMode.SYSTEM) },
-                        label = { Text("System") },
-                        leadingIcon = { Icon(Icons.Default.SettingsBrightness, contentDescription = "Icon", modifier = Modifier.size(16.dp)) },
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                            selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer
-                        ),
-                        modifier = Modifier.weight(1f).testTag("theme_chip_system")
-                    )
-                }
+                FilterChip(
+                    selected = themeMode == ThemeMode.DARK,
+                    onClick = { onThemeModeChange(ThemeMode.DARK) },
+                    label = { Text("Dark") },
+                    leadingIcon = { Icon(Icons.Default.DarkMode, contentDescription = "Select dark theme", modifier = Modifier.size(16.dp)) },
+                    modifier = Modifier.weight(1f).testTag("theme_chip_dark")
+                )
+                FilterChip(
+                    selected = themeMode == ThemeMode.SYSTEM,
+                    onClick = { onThemeModeChange(ThemeMode.SYSTEM) },
+                    label = { Text("System") },
+                    leadingIcon = { Icon(Icons.Default.SettingsBrightness, contentDescription = "Select system default theme", modifier = Modifier.size(16.dp)) },
+                    modifier = Modifier.weight(1f).testTag("theme_chip_system")
+                )
             }
         }
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Weight Unit Settings Card (lbs vs kg)
-        Card(
-            modifier = Modifier.fillMaxWidth().testTag("weight_unit_selection_card"),
-            shape = RoundedCornerShape(18.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
-        ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                AssessmentSectionHeader(
-                    title = "Weight Unit",
-                    subtitle = "Choose your preferred measurement unit for tracking lifts and plate calculator"
+        // Weight Unit Settings
+        Column(modifier = Modifier.fillMaxWidth().testTag("weight_unit_selection_card")) {
+            AssessmentSectionHeader(
+                title = "Weight Unit",
+                subtitle = "Preferred measurement unit"
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                FilterChip(
+                    selected = weightUnit == "lbs",
+                    onClick = { onWeightUnitChange("lbs") },
+                    label = { Text("Pounds (lbs)") },
+                    leadingIcon = { Icon(Icons.Default.FitnessCenter, contentDescription = null, modifier = Modifier.size(16.dp)) },
+                    modifier = Modifier.weight(1f).testTag("weight_unit_chip_lbs")
                 )
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    FilterChip(
-                        selected = weightUnit == "lbs",
-                        onClick = { onWeightUnitChange("lbs") },
-                        label = { Text("Pounds (lbs)") },
-                        leadingIcon = { Icon(Icons.Default.FitnessCenter, contentDescription = null, modifier = Modifier.size(16.dp)) },
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                            selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer
-                        ),
-                        modifier = Modifier.weight(1f).testTag("weight_unit_chip_lbs")
-                    )
-
-                    FilterChip(
-                        selected = weightUnit == "kg",
-                        onClick = { onWeightUnitChange("kg") },
-                        label = { Text("Kilograms (kg)") },
-                        leadingIcon = { Icon(Icons.Default.FitnessCenter, contentDescription = null, modifier = Modifier.size(16.dp)) },
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                            selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer
-                        ),
-                        modifier = Modifier.weight(1f).testTag("weight_unit_chip_kg")
-                    )
-                }
+                FilterChip(
+                    selected = weightUnit == "kg",
+                    onClick = { onWeightUnitChange("kg") },
+                    label = { Text("Kilograms (kg)") },
+                    leadingIcon = { Icon(Icons.Default.FitnessCenter, contentDescription = null, modifier = Modifier.size(16.dp)) },
+                    modifier = Modifier.weight(1f).testTag("weight_unit_chip_kg")
+                )
             }
         }
 
