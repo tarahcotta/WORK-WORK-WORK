@@ -853,7 +853,7 @@ fun ActiveLoggerScreen(
                                         style = MaterialTheme.typography.titleMedium,
                                         fontWeight = FontWeight.Bold,
                                         color = MaterialTheme.colorScheme.onSurface,
-                                        maxLines = 2,
+                                        maxLines = 1,
                                         overflow = TextOverflow.Ellipsis,
                                         lineHeight = 20.sp,
                                         modifier = Modifier.weight(1f)
@@ -2130,6 +2130,7 @@ fun ActiveLoggerScreen(
         val (targetExName, targetWorkingWeight) = smartWarmupDialogTarget!!
         SmartWarmupDialog(
             exerciseName = targetExName,
+            videoUrl = com.example.data.ExerciseLibraryRepository.exercises.find { it.name == targetExName }?.videoUrl,
             workingWeightLbs = targetWorkingWeight,
             onDismiss = { smartWarmupDialogTarget = null },
             onApplyWarmupSets = { warmupSteps ->

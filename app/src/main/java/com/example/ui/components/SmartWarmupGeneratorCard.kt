@@ -47,6 +47,7 @@ data class WarmupSetStep(
 @Composable
 fun SmartWarmupDialog(
     exerciseName: String,
+    videoUrl: String? = null,
     workingWeightLbs: Float,
     onDismiss: () -> Unit,
     onApplyWarmupSets: (List<WarmupSetStep>) -> Unit = {}
@@ -195,7 +196,21 @@ fun SmartWarmupDialog(
                         )
                     }
                 }
-
+                
+                // ADDED: Video Player for Warmup
+                if (!videoUrl.isNullOrBlank()) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Card(
+                        modifier = Modifier.fillMaxWidth().height(150.dp),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        com.example.ui.components.ExerciseVideoPlayerBox(
+                            exerciseName = exerciseName,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
+                }
+                
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // Working Weight Target Selector
