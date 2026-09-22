@@ -18,8 +18,8 @@ android {
     applicationId = "com.aistudio.vitalstrength.wlongevity.nbiyda"
     minSdk = 24
     targetSdk = 36
-    versionCode = 27
-    versionName = "27.0"
+    versionCode = 28
+    versionName = "28.0"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
