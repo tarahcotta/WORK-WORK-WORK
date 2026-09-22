@@ -19,3 +19,20 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# Firebase
+-keep class com.google.firebase.** { *; }
+
+# Kotlin Serialization
+-keepattributes *Annotation*,InnerClasses
+-keepclassmembers class * {
+    @kotlinx.serialization.Serializable <fields>;
+}
+-keepnames class kotlinx.serialization.serializer.** { *; }
+
+# Room
+-keep class * extends androidx.room.RoomDatabase
+-keep class * extends androidx.room.Dao
+-keepclassmembers class * extends androidx.room.RoomDatabase {
+    <init>();
+}

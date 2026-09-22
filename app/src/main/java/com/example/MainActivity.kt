@@ -14,6 +14,10 @@ import androidx.compose.ui.Modifier
 import com.example.ui.MainContainer
 import com.example.ui.VitalViewModel
 import com.example.ui.theme.VitalStrengthTheme
+import com.google.firebase.Firebase
+import com.google.firebase.appcheck.appCheck
+import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
+import com.google.firebase.initialize
 
 class MainActivity : ComponentActivity() {
 
@@ -22,6 +26,10 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        Firebase.initialize(this)
+        Firebase.appCheck.installAppCheckProviderFactory(
+            PlayIntegrityAppCheckProviderFactory.getInstance()
+        )
         com.example.data.musclewiki.MuscleWikiRepository.initialize(applicationContext)
         setContent {
             val themeMode by viewModel.themeMode.collectAsState()
