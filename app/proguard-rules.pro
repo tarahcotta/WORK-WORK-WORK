@@ -1,38 +1,38 @@
 # Add project specific ProGuard rules here.
-# You can control the set of applied configuration files using the
-# proguardFiles setting in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
-
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
-
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# Preserve line number information for debugging stack traces.
+-keepattributes SourceFile,LineNumberTable
 
 # Firebase
 -keep class com.google.firebase.** { *; }
 
 # Kotlin Serialization
--keepattributes *Annotation*,InnerClasses
+-keepattributes *Annotation*,InnerClasses,Signature
 -keepclassmembers class * {
     @kotlinx.serialization.Serializable <fields>;
 }
 -keepnames class kotlinx.serialization.serializer.** { *; }
+-keepclassmembers class * {
+    @kotlinx.serialization.Serializer <fields>;
+}
 
-# Room
+# Room Database
 -keep class * extends androidx.room.RoomDatabase
 -keep class * extends androidx.room.Dao
 -keepclassmembers class * extends androidx.room.RoomDatabase {
     <init>();
+}
+# Keep DAO implementation and entity classes that Room uses
+-keep class * implements androidx.room.RoomDatabase
+-keep class * implements androidx.room.Dao
+-keepclassmembers class * {
+    @androidx.room.* <methods>;
+    @androidx.room.* <fields>;
+}
+
+# Vico Charts
+-keep class com.patrykandpatrick.vico.** { *; }
+-keepattributes *Annotation*
+-keepclassmembers class * {
+    @androidx.annotation.Keep *;
 }
