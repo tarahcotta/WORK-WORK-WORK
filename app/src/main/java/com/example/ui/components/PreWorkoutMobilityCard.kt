@@ -30,6 +30,9 @@ import androidx.compose.material.icons.filled.Shield
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.material.icons.filled.Timer
+import androidx.compose.material.icons.filled.Videocam
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -74,6 +77,7 @@ fun PreWorkoutMobilityCard(
 ) {
     val drills = remember(exercises) { MobilityRoutineManager.generateTailoredWarmup(exercises) }
     var expanded by remember { mutableStateOf(false) }
+    var activeVideoDrillTitle by remember { mutableStateOf<String?>(null) }
     val completedDrills = remember { mutableStateListOf<Int>() }
 
     // Optional 60s drill timer state
@@ -369,6 +373,38 @@ fun PreWorkoutMobilityCard(
 
                                     Spacer(modifier = Modifier.width(8.dp))
 
+                                    // Video Preview Button
+                                    Surface(
+                                        shape = RoundedCornerShape(10.dp),
+                                        color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f),
+                                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)),
+                                        modifier = Modifier.clickable {
+                                            VitalHapticFeedback.timerButtonTap(context, haptic)
+                                            activeVideoDrillTitle = drill.title
+                                        }
+                                    ) {
+                                        Row(
+                                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp),
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Default.Videocam,
+                                                contentDescription = "View Video Guide",
+                                                tint = MaterialTheme.colorScheme.primary,
+                                                modifier = Modifier.size(14.dp)
+                                            )
+                                            Spacer(modifier = Modifier.width(4.dp))
+                                            Text(
+                                                text = "Video",
+                                                style = MaterialTheme.typography.labelMedium,
+                                                fontWeight = FontWeight.Bold,
+                                                color = MaterialTheme.colorScheme.primary
+                                            )
+                                        }
+                                    }
+
+                                    Spacer(modifier = Modifier.width(8.dp))
+
                                     // Quick 60s drill timer button (Top right anchored, non-compressible)
                                     Surface(
                                         shape = RoundedCornerShape(10.dp),
@@ -509,6 +545,29 @@ fun PreWorkoutMobilityCard(
                         }
                     }
                 }
+            }
+        }
+    }
+
+    // Video Preview Dialog
+    if (activeVideoDrillTitle != null) {
+        Dialog(
+            onDismissRequest = { activeVideoDrillTitle = null },
+            properties = DialogProperties(
+                usePlatformDefaultWidth = false,
+                dismissOnBackPress = true,
+                dismissOnClickOutside = true
+            )
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(0.95f)
+                    .padding(16.dp)
+            ) {
+                ExerciseVideoPlayerBox(
+                    exerciseName = activeVideoDrillTitle ?: "",
+                    onDismiss = { activeVideoDrillTitle = null }
+                )
             }
         }
     }
