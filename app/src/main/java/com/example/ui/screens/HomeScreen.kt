@@ -72,6 +72,7 @@ import com.example.ui.components.AIRecommendationsCard
 import com.example.ui.components.ProgressiveOverloadHighlightCard
 import com.example.ui.components.ProgressiveOverloadInfo
 import com.example.ui.components.WeightProgressionVicoChartCard
+import com.example.ui.components.WeeklySummaryDashboardCard
 import com.example.ui.components.WorkoutCalendarSummaryCard
 import com.example.ui.components.WomensStrengthHeaderLogo
 import com.example.ui.components.WomensStrengthLogoIcon
@@ -380,6 +381,14 @@ fun HomeScreen(
                 allLoggedSets = allLoggedSets
             )
         }
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        // Weekly Summary Dashboard
+        WeeklySummaryDashboardCard(
+            sessions = sessions,
+            targetSessionsPerWeek = profile?.scheduleDaysPerWeek ?: 3
+        )
 
         Spacer(modifier = Modifier.height(20.dp))
 
