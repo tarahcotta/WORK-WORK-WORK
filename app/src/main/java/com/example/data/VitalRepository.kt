@@ -1,6 +1,7 @@
 package com.example.data
 
 import android.util.Log
+import com.google.firebase.perf.FirebasePerformance
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
@@ -115,15 +116,22 @@ class VitalRepository(
     }
 
     suspend fun restoreUserDataFromCloud(userId: String) {
-        val cloudProfile = firestoreSyncManager.fetchUserProfileFromCloud(userId)
-        if (cloudProfile != null) {
-            dao.saveUserProfile(cloudProfile)
-            generateAndSaveRoutines(cloudProfile)
-        }
+        val trace = FirebasePerformance.getInstance().newTrace("fetch_initial_workout_data")
+        trace.start()
+        
+        try {
+            val cloudProfile = firestoreSyncManager.fetchUserProfileFromCloud(userId)
+            if (cloudProfile != null) {
+                dao.saveUserProfile(cloudProfile)
+                generateAndSaveRoutines(cloudProfile)
+            }
 
-        val cloudSessions = firestoreSyncManager.fetchLoggedSessionsFromCloud(userId)
-        for ((session, sets) in cloudSessions) {
-            logWorkoutSession(session, sets)
+            val cloudSessions = firestoreSyncManager.fetchLoggedSessionsFromCloud(userId)
+            for ((session, sets) in cloudSessions) {
+                logWorkoutSession(session, sets)
+            }
+        } finally {
+            trace.stop()
         }
     }
 

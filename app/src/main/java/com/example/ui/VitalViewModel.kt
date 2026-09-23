@@ -38,6 +38,13 @@ class VitalViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository: VitalRepository
 
+    val networkMonitor = com.example.network.NetworkMonitor(application)
+    val isOnline: StateFlow<Boolean> = networkMonitor.isOnline.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = true
+    )
+
     val authManager: FirebaseAuthManager = FirebaseAuthManager(application)
     val isFirebaseConfigured: StateFlow<Boolean> = authManager.isConfigured
     val currentUser: StateFlow<FirebaseUser?> = authManager.currentUser

@@ -62,6 +62,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.LaunchedEffect
 import kotlinx.coroutines.launch
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -136,6 +137,15 @@ fun MainContainer(
     val exercises by viewModel.selectedRoutineExercises.collectAsState()
     val personalBests by viewModel.personalBests.collectAsState()
     val overloadList by viewModel.progressiveOverloadList.collectAsState()
+    val isOnline by viewModel.isOnline.collectAsState()
+
+    LaunchedEffect(isOnline) {
+        if (!isOnline) {
+            coroutineScope.launch {
+                snackbarHostState.showSnackbar("You are currently offline.", duration = androidx.compose.material3.SnackbarDuration.Short)
+            }
+        }
+    }
 
     if (!hasCompletedOnboarding) {
         OnboardingScreen(

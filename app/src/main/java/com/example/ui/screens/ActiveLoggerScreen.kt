@@ -6,6 +6,7 @@ import android.os.CountDownTimer
 import android.speech.RecognizerIntent
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import android.media.AudioManager
 import android.media.ToneGenerator
 import android.provider.Settings
@@ -221,6 +222,12 @@ fun ActiveLoggerScreen(
 
     // Routine Title
     val routineTitle = routine?.dayName ?: "Live Longevity Workout"
+    val crashlytics = remember { FirebaseCrashlytics.getInstance() }
+    
+    LaunchedEffect(routineTitle) {
+        crashlytics.log("Started workout session: $routineTitle")
+    }
+    
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -353,6 +360,7 @@ fun ActiveLoggerScreen(
     val isFinishEnabled = totalCompletedSets > 0
 
     val executeSaveAndComplete = {
+        crashlytics.log("Saving workout session: $routineTitle")
         VitalHapticFeedback.exerciseComplete(context, haptic)
         val allLoggedSets = mutableListOf<LoggedSetEntity>()
         exerciseLogs.forEach { log ->
