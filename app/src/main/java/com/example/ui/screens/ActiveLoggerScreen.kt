@@ -1385,6 +1385,50 @@ fun ActiveLoggerScreen(
                                         }
                                     }
                                 }
+                                     // Estimated 1RM Calculation (Epley Formula)
+                                     val w = setInput.weightText.toFloatOrNull() ?: 0f
+                                     val r = setInput.repsText.toIntOrNull() ?: 0
+                                     val est1RM = if (w > 0f && r > 0) {
+                                         if (r == 1) w.toInt() else (w * (1f + (r.toFloat() / 30f))).toInt()
+                                     } else 0
+
+                                     if (est1RM > 0) {
+                                         Spacer(modifier = Modifier.height(8.dp))
+                                         Surface(
+                                             shape = RoundedCornerShape(8.dp),
+                                             color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f),
+                                             border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)),
+                                             modifier = Modifier.fillMaxWidth().testTag("est_1rm_${exIndex}_$setIndex")
+                                         ) {
+                                             Row(
+                                                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                                                 verticalAlignment = Alignment.CenterVertically,
+                                                 horizontalArrangement = Arrangement.SpaceBetween
+                                             ) {
+                                                 Row(verticalAlignment = Alignment.CenterVertically) {
+                                                     Icon(
+                                                         imageVector = Icons.Default.EmojiEvents,
+                                                         contentDescription = null,
+                                                         tint = MaterialTheme.colorScheme.primary,
+                                                         modifier = Modifier.size(14.dp)
+                                                     )
+                                                     Spacer(modifier = Modifier.width(6.dp))
+                                                     Text(
+                                                         text = "Estimated 1RM (Epley)",
+                                                         style = MaterialTheme.typography.labelSmall,
+                                                         fontWeight = FontWeight.Bold,
+                                                         color = MaterialTheme.colorScheme.onSurface
+                                                     )
+                                                 }
+                                                 Text(
+                                                     text = "$est1RM lbs",
+                                                     style = MaterialTheme.typography.labelMedium,
+                                                     fontWeight = FontWeight.ExtraBold,
+                                                     color = MaterialTheme.colorScheme.primary
+                                                 )
+                                             }
+                                         }
+                                     }
                             }
                         }
 
