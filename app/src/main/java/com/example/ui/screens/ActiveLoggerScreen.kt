@@ -111,6 +111,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -179,13 +180,23 @@ fun ActiveLoggerScreen(
     personalBests: Map<String, Float> = emptyMap(),
     userProfile: com.example.data.UserProfileEntity? = null,
     viewModel: com.example.ui.VitalViewModel,
-    onSaveSession: (routineTitle: String, sets: List<LoggedSetEntity>, feel: String, notes: String) -> Unit,
+    onSaveSession: (routineTitle: String, sets: List<LoggedSetEntity>, feel: String, notes: String, durationSeconds: Long) -> Unit,
     onCancel: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val scrollState = rememberScrollState()
     val haptic = LocalHapticFeedback.current
     val context = LocalContext.current
+
+    val sessionStartTimeMs = remember { System.currentTimeMillis() }
+    var elapsedSeconds by remember { mutableLongStateOf(0L) }
+
+    LaunchedEffect(Unit) {
+        while (true) {
+            kotlinx.coroutines.delay(1000L)
+            elapsedSeconds = maxOf(1L, (System.currentTimeMillis() - sessionStartTimeMs) / 1000L)
+        }
+    }
 
     val isReducedMotion = remember(context) {
         try {
@@ -392,7 +403,8 @@ fun ActiveLoggerScreen(
             }
         }.trim()
 
-        onSaveSession(routineTitle, allLoggedSets, overallFeel, combinedNotes)
+        val finalDurationSeconds = maxOf(60L, elapsedSeconds)
+        onSaveSession(routineTitle, allLoggedSets, overallFeel, combinedNotes, finalDurationSeconds)
         showCompletionDialog = true
     }
 
@@ -446,6 +458,20 @@ fun ActiveLoggerScreen(
                                         style = MaterialTheme.typography.labelSmall,
                                         fontWeight = FontWeight.Bold,
                                         color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                    )
+                                }
+                                Surface(
+                                    shape = RoundedCornerShape(6.dp),
+                                    color = MaterialTheme.colorScheme.secondaryContainer
+                                ) {
+                                    val m = elapsedSeconds / 60
+                                    val s = elapsedSeconds % 60
+                                    Text(
+                                        text = "⏱️ ${m}:${"%02d".format(s)}",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.onSecondaryContainer,
                                         modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
                                     )
                                 }
@@ -2031,6 +2057,11 @@ fun ActiveLoggerScreen(
                     modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text("Duration", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        val mins = (elapsedSeconds / 60).coerceAtLeast(1)
+                        Text("${mins}m", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                    }
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text("Sets", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         Text("$totalCompletedSets", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)

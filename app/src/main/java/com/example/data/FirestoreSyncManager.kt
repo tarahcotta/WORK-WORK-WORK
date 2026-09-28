@@ -115,6 +115,7 @@ class FirestoreSyncManager(private val context: Context? = null) {
                 "totalSetsCompleted" to session.totalSetsCompleted,
                 "overallFeel" to session.overallFeel,
                 "notes" to session.notes,
+                "durationSeconds" to session.durationSeconds,
                 "sets" to sets.map { set ->
                     mapOf(
                         "id" to set.id,
@@ -162,6 +163,7 @@ class FirestoreSyncManager(private val context: Context? = null) {
                 val overallFeel = doc.getString("overallFeel") ?: "Good"
                 val notes = doc.getString("notes") ?: ""
 
+                val durationSec = doc.getLong("durationSeconds") ?: 0L
                 val sessionEntity = LoggedWorkoutSessionEntity(
                     id = sessionId,
                     routineDayTitle = routineTitle,
@@ -169,7 +171,8 @@ class FirestoreSyncManager(private val context: Context? = null) {
                     totalVolumeLbs = volume,
                     totalSetsCompleted = setsCount,
                     overallFeel = overallFeel,
-                    notes = notes
+                    notes = notes,
+                    durationSeconds = durationSec
                 )
 
                 val rawSets = doc.get("sets") as? List<*> ?: emptyList<Any>()

@@ -777,6 +777,20 @@ fun ActivitySessionCard(
                     }
                 }
 
+                // Duration Pill
+                val sessionDurMins = if (session.durationSeconds > 0) (session.durationSeconds / 60).coerceAtLeast(1) else (session.totalSetsCompleted * 3L)
+                Surface(
+                    shape = RoundedCornerShape(10.dp),
+                    color = MaterialTheme.colorScheme.surfaceVariant
+                ) {
+                    Text(
+                        text = "⏱️ ${sessionDurMins} min",
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+                    )
+                }
                 // Total Sets Pill
                 Surface(
                     shape = RoundedCornerShape(10.dp),

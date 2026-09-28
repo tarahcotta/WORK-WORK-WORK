@@ -11,7 +11,8 @@ data class LoggedWorkoutSessionEntity(
     val totalVolumeLbs: Float = 0f,
     val totalSetsCompleted: Int = 0,
     val overallFeel: String = "Strong & Energized", // "Strong & Energized", "Challenging but Good", "Joint Discomfort / Scaled"
-    val notes: String = ""
+    val notes: String = "",
+    val durationSeconds: Long = 0L
 )
 
 @Entity(tableName = "logged_sets")

@@ -37,6 +37,7 @@ import androidx.compose.material.icons.filled.FitnessCenter
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.SelfImprovement
 import androidx.compose.material.icons.filled.Today
+import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -116,6 +117,17 @@ fun WorkoutCalendarSummaryCard(
 
     val monthCompletedCount = monthSessions.size
     val monthTotalVolume = monthSessions.sumOf { it.totalVolumeLbs.toDouble() }.toInt()
+    val monthTotalDurationMinutes = monthSessions.sumOf { session ->
+        if (session.durationSeconds > 0) (session.durationSeconds / 60).coerceAtLeast(1)
+        else (session.totalSetsCompleted * 3L).coerceAtLeast(1)
+    }
+    val formattedMonthTime = if (monthTotalDurationMinutes >= 60) {
+        val hrs = monthTotalDurationMinutes / 60
+        val mins = monthTotalDurationMinutes % 60
+        if (mins > 0) "${hrs}h ${mins}m" else "${hrs}h"
+    } else {
+        "${monthTotalDurationMinutes}m"
+    }
 
     Card(
         modifier = modifier
@@ -158,7 +170,7 @@ fun WorkoutCalendarSummaryCard(
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
-                            text = "$monthCompletedCount workouts • ${monthTotalVolume} lbs volume",
+                            text = "$monthCompletedCount workouts • $formattedMonthTime total • ${monthTotalVolume} lbs volume",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -371,11 +383,50 @@ fun WorkoutCalendarSummaryCard(
                                             fontWeight = FontWeight.SemiBold,
                                             color = MaterialTheme.colorScheme.onSurface
                                         )
-                                        Text(
-                                            text = "${session.totalSetsCompleted} sets logged • ${session.totalVolumeLbs.toInt()} lbs volume • ${session.overallFeel}",
-                                            style = MaterialTheme.typography.bodySmall,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                                        )
+                                        Spacer(modifier = Modifier.height(2.dp))
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                        ) {
+                                            val sessionDurationStr = if (session.durationSeconds > 0) {
+                                                val mins = session.durationSeconds / 60
+                                                val secs = session.durationSeconds % 60
+                                                if (mins > 0 && secs > 0) "${mins}m ${secs}s"
+                                                else if (mins > 0) "${mins} min"
+                                                else "${secs}s"
+                                            } else {
+                                                "${session.totalSetsCompleted * 3} min"
+                                            }
+                                            Surface(
+                                                shape = RoundedCornerShape(6.dp),
+                                                color = MaterialTheme.colorScheme.primaryContainer
+                                            ) {
+                                                Row(
+                                                    verticalAlignment = Alignment.CenterVertically,
+                                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                                ) {
+                                                    Icon(
+                                                        imageVector = Icons.Default.Timer,
+                                                        contentDescription = "Duration",
+                                                        tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                                                        modifier = Modifier.size(11.dp)
+                                                    )
+                                                    Spacer(modifier = Modifier.width(3.dp))
+                                                    Text(
+                                                        text = sessionDurationStr,
+                                                        style = MaterialTheme.typography.labelSmall,
+                                                        fontWeight = FontWeight.Bold,
+                                                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                                        fontSize = 10.sp
+                                                    )
+                                                }
+                                            }
+                                            Text(
+                                                text = "${session.totalSetsCompleted} sets • ${session.totalVolumeLbs.toInt()} lbs • ${session.overallFeel}",
+                                                style = MaterialTheme.typography.bodySmall,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
+                                        }
                                     }
                                 }
                             }

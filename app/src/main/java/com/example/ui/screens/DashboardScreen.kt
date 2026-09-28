@@ -165,17 +165,17 @@ data class BoneDensityTrendDataPoint(
 
 @Composable
 fun DashboardScreen(
-    profile: UserProfileEntity?,
-    routines: List<WorkoutRoutineEntity>,
-    sessions: List<LoggedWorkoutSessionEntity>,
+    profile: UserProfileEntity? = null,
+    routines: List<WorkoutRoutineEntity> = emptyList(),
+    sessions: List<LoggedWorkoutSessionEntity> = emptyList(),
     overloadList: List<ProgressiveOverloadInfo> = emptyList(),
     isSessionActive: Boolean = false,
     viewModel: VitalViewModel? = null,
     onOpenAuthDialog: () -> Unit = {},
-    onSelectRoutine: (WorkoutRoutineEntity) -> Unit,
-    onNavigateToAssessment: () -> Unit,
-    onNavigateToLogger: () -> Unit,
-    onNavigateToGuide: () -> Unit,
+    onSelectRoutine: (WorkoutRoutineEntity) -> Unit = {},
+    onNavigateToAssessment: () -> Unit = {},
+    onNavigateToLogger: () -> Unit = {},
+    onNavigateToGuide: () -> Unit = {},
     onNavigateToActivity: (() -> Unit)? = null,
     onNavigateToProgress: (() -> Unit)? = null,
     modifier: Modifier = Modifier

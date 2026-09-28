@@ -1,5 +1,10 @@
 package com.example.ui
 
+import com.example.ui.screens.CalendarScreen
+import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.outlined.CalendarMonth
+
+
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,6 +25,8 @@ import androidx.compose.material.icons.filled.FitnessCenter
 import androidx.compose.material.icons.filled.PhotoLibrary
 import com.example.ui.components.AuthDialog
 import androidx.compose.material.icons.filled.GridOn
+import androidx.compose.material.icons.filled.EventNote
+import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.HealthAndSafety
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.PlayCircleFilled
@@ -28,6 +35,8 @@ import androidx.compose.material.icons.outlined.Assignment
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.FitnessCenter
 import androidx.compose.material.icons.outlined.GridOn
+import androidx.compose.material.icons.outlined.EventNote
+import androidx.compose.material.icons.outlined.Build
 import androidx.compose.material.icons.outlined.HealthAndSafety
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.PlayCircle
@@ -99,15 +108,16 @@ enum class NavDestination(
     val unselectedIcon: androidx.compose.ui.graphics.vector.ImageVector
 ) {
     HOME("home", "Dashboard", Icons.Filled.Home, Icons.Outlined.Home),
+    CALENDAR("calendar", "Calendar", Icons.Filled.CalendarMonth, Icons.Outlined.CalendarMonth),
     LIBRARY("library", "Exercises", Icons.AutoMirrored.Filled.MenuBook, Icons.AutoMirrored.Outlined.MenuBook),
     ACTIVITY("activity", "Activity", Icons.Filled.History, Icons.Outlined.History),
-    TABLE("table", "Plan", Icons.Filled.GridOn, Icons.Outlined.GridOn),
+    TABLE("table", "Plan", Icons.Filled.EventNote, Icons.Outlined.EventNote),
     LOGGER("logger", "Workout", Icons.Filled.PlayCircleFilled, Icons.Outlined.PlayCircle),
     PROGRESS("progress", "Analytics", Icons.Filled.Timeline, Icons.Outlined.Timeline),
     PLATE_CALC("plate_calc", "Plate Calc", Icons.Filled.FitnessCenter, Icons.Outlined.FitnessCenter),
     GUIDE("guide", "Science Guide", Icons.Filled.HealthAndSafety, Icons.Outlined.HealthAndSafety),
     PHOTOS("photos", "Photos", Icons.Filled.PhotoLibrary, Icons.Filled.PhotoLibrary),
-    TOOLS("tools", "Tools", Icons.Filled.GridOn, Icons.Outlined.GridOn),
+    TOOLS("tools", "Tools", Icons.Filled.Build, Icons.Outlined.Build),
     ASSESSMENT("assessment", "Assessment", Icons.AutoMirrored.Filled.Assignment, Icons.AutoMirrored.Outlined.Assignment),
     PROFILE_SETUP("profile_setup", "Profile", Icons.Filled.AccountCircle, Icons.Outlined.AccountCircle)
 }
@@ -158,10 +168,9 @@ fun MainContainer(
 
     val navItems = listOf(
         NavDestination.HOME,
-        NavDestination.LIBRARY,
+        NavDestination.CALENDAR,
         NavDestination.TABLE,
-        NavDestination.TOOLS,
-        NavDestination.PROFILE_SETUP
+        NavDestination.TOOLS
     )
 
     Scaffold(
@@ -201,6 +210,7 @@ fun MainContainer(
                         Text(
                             text = when (currentDestination) {
                                 NavDestination.HOME -> "Vital Strength"
+                                NavDestination.CALENDAR -> "Training Calendar"
                                 NavDestination.LIBRARY -> "Exercise Library"
                                 NavDestination.ACTIVITY -> "Workout History"
                                 NavDestination.TABLE -> "Workout Plan"
@@ -356,6 +366,21 @@ fun MainContainer(
                 .padding(innerPadding)
         ) {
             when (currentDestination) {
+                NavDestination.CALENDAR -> {
+                    CalendarScreen(
+                        sessions = sessions,
+                        routines = routines,
+                        onStartWorkout = { routine ->
+                            if (routine != null) {
+                                viewModel.selectRoutine(routine)
+                            } else if (routines.isNotEmpty()) {
+                                viewModel.selectRoutine(routines.first())
+                            }
+                            currentDestination = NavDestination.LOGGER
+                        }
+                    )
+                }
+
                 NavDestination.HOME -> {
                     DashboardScreen(
                         profile = profile,
@@ -450,9 +475,9 @@ fun MainContainer(
                         personalBests = personalBests,
                         userProfile = profile,
                         viewModel = viewModel,
-                        onSaveSession = { title, loggedSets, feel, notes ->
+                        onSaveSession = { title, loggedSets, feel, notes, durationSec ->
                             isSessionActive = false
-                            viewModel.logWorkoutSession(title, loggedSets, feel, notes)
+                            viewModel.logWorkoutSession(title, loggedSets, feel, notes, durationSec)
                             customExercisesForSession = emptyList()
                             
                             var nextRoutine: WorkoutRoutineEntity? = null
@@ -505,9 +530,12 @@ fun MainContainer(
 
                 NavDestination.TOOLS -> {
                     ToolsScreen(
+                        onNavigateToLibrary = { currentDestination = NavDestination.LIBRARY },
                         onNavigateToPlateCalc = { currentDestination = NavDestination.PLATE_CALC },
                         onNavigateToGuide = { currentDestination = NavDestination.GUIDE },
-                        onNavigateToPhotos = { currentDestination = NavDestination.PHOTOS }
+                        onNavigateToPhotos = { currentDestination = NavDestination.PHOTOS },
+                        onNavigateToProfile = { currentDestination = NavDestination.PROFILE_SETUP },
+                        onNavigateToAssessment = { currentDestination = NavDestination.ASSESSMENT }
                     )
                 }
 

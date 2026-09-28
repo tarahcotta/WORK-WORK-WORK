@@ -319,7 +319,8 @@ class VitalViewModel(application: Application) : AndroidViewModel(application) {
         routineDayTitle: String,
         sets: List<LoggedSetEntity>,
         overallFeel: String,
-        notes: String
+        notes: String,
+        durationSeconds: Long = 0L
     ) {
         viewModelScope.launch {
             val totalVolume = sets.sumOf { (it.weightLbs * it.repsCompleted).toDouble() }.toFloat()
@@ -329,7 +330,8 @@ class VitalViewModel(application: Application) : AndroidViewModel(application) {
                 totalVolumeLbs = totalVolume,
                 totalSetsCompleted = sets.size,
                 overallFeel = overallFeel,
-                notes = notes
+                notes = notes,
+                durationSeconds = durationSeconds
             )
             val uid = currentUser.value?.uid
             repository.logWorkoutSession(session, sets, uid)
